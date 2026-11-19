@@ -135,12 +135,12 @@ export function Sheet() {
         <span className="keys"><span><kbd>Enter</kbd> nowy wiersz</span><span><kbd>↑</kbd><kbd>↓</kbd></span><span><kbd>Backspace</kbd> usuwa</span></span>
       </div>
       <div className="accents" aria-label="Akcenty">
-        <span>Akcenty: kliknij, żeby wstawić w pole i skopiować</span>
+        <span title="Kliknij: wstawia w pole i kopiuje">Akcenty</span>
         {/* mousedown preventDefault keeps the caret in the text field */}
         <div className="acc" id="acc" onMouseDown={(ev) => { if ((ev.target as HTMLElement).closest("button")) ev.preventDefault(); }}>
           {ACCENTS.map((ch) => <button type="button" key={ch} onClick={(ev) => onAccent(ev, ch)}>{ch}</button>)}
         </div>
-        <span>albo wpisz <kbd>e`</kbd> → è</span>
+        <span><kbd>e`</kbd> → è</span>
       </div>
     </section>
   );
