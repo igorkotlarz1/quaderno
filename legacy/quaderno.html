@@ -101,10 +101,10 @@ button.danger{border-color:var(--red);color:var(--red)}
 .keys{font-size:.84rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 14px}
 kbd{font-family:var(--f-it);font-size:.74rem;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--paper);color:var(--ink)}
 
-.accents{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px 12px;background:var(--sheet);border-top:1px dashed var(--line)}
-.accents>span{font-size:.84rem;color:var(--muted)}
-.acc{display:flex;flex-wrap:wrap;gap:6px}
-.acc button{font-family:var(--f-it);font-size:1.15rem;font-weight:500;min-width:44px;min-height:44px;padding:0;justify-content:center;border-width:1px;border-color:var(--line);background:var(--paper)}
+.accents{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:6px 12px;background:var(--sheet);border-top:1px dashed var(--line)}
+.accents>span{font-family:var(--f-it);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.acc{display:flex;flex-wrap:wrap;gap:4px}
+.acc button{font-family:var(--f-it);font-size:1rem;font-weight:500;min-width:36px;min-height:36px;padding:0;justify-content:center;border-width:1px;border-color:var(--line);background:var(--paper)}
 .acc button:hover{border-color:var(--red);color:var(--red);background:var(--paper)}
 .acc button.hit{background:var(--red);border-color:var(--red);color:var(--red-ink)}
 .row input.it.fixed{text-decoration:underline dotted var(--ok);text-underline-offset:4px}
@@ -159,14 +159,20 @@ kbd{font-family:var(--f-it);font-size:.74rem;border:1px solid var(--line);border
 .lvl-side{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
 .lvl-side button{min-height:36px;padding:0 10px;font-size:.84rem}
 .lvl-due{color:var(--red);font-weight:600}
-.lvl-track{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
-.lvl-seg{position:relative;height:30px;border:1.5px solid var(--line);border-radius:4px;background:var(--sheet);overflow:hidden;display:flex;align-items:center;justify-content:center}
-.lvl-seg i{position:absolute;inset:0 auto 0 0;width:0;background:var(--red);transition:width .6s var(--ease)}
-.lvl-seg.done i{width:100%;background:var(--ink)}
-.lvl-seg span{position:relative;font-family:var(--f-it);font-size:.78rem;font-weight:600;letter-spacing:.04em;color:var(--muted)}
-.lvl-seg.done{border-color:var(--ink)}.lvl-seg.done span{color:var(--paper)}
-.lvl-seg.now{border-color:var(--red)}.lvl-seg.now span{color:var(--ink)}
-.lvl-seg.now i{background:var(--red-soft);box-shadow:inset -2px 0 0 var(--red)}
+.lvl-track{display:flex;flex-direction:column;gap:6px}
+/* one glass tube: ink outline, squared paper inside, red liquid with a light meniscus */
+.vial{position:relative;height:26px;border:1.5px solid var(--ink);border-radius:99px;overflow:hidden;
+  background-color:var(--sheet);background-image:linear-gradient(90deg,var(--quad) 1px,transparent 1px);background-size:10px 10px}
+.vial-fill{position:absolute;inset:3px auto 3px 3px;width:0;max-width:calc(100% - 6px);border-radius:99px;background:var(--red);
+  box-shadow:inset 0 -3px 0 color-mix(in srgb,var(--ink) 18%,transparent),inset -3px 0 0 color-mix(in srgb,#fff 28%,transparent);
+  transition:width .9s var(--ease)}
+.vial-fill::after{content:"";position:absolute;left:8px;right:10px;top:3px;height:4px;border-radius:99px;background:color-mix(in srgb,#fff 45%,transparent)}
+.vial::after{content:"";position:absolute;left:14px;right:14px;top:3px;height:3px;border-radius:99px;background:color-mix(in srgb,#fff 55%,transparent);pointer-events:none;opacity:.7}
+.vial-tick{position:absolute;top:0;bottom:0;width:1.5px;background:var(--ink);opacity:.35}
+.vial-lbl{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.vial-lbl span{font-family:var(--f-it);font-size:.76rem;font-weight:600;letter-spacing:.04em;color:var(--muted);padding-left:4px;border-left:1.5px solid var(--line)}
+.vial-lbl span.done{color:var(--ink);border-left-color:var(--ink)}
+.vial-lbl span.now{color:var(--red);border-left-color:var(--red)}
 .lvl-more{background:var(--sheet);border:1.5px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:12px}
 .lvl-more[hidden]{display:none}
 .lvl-more p{margin:0;font-size:.94rem;max-width:70ch}
@@ -240,11 +246,11 @@ textarea{font-family:var(--f-it);font-size:.82rem;width:100%;min-height:150px;bo
       <span class="keys"><span><kbd>Enter</kbd> nowy wiersz</span><span><kbd>↑</kbd><kbd>↓</kbd></span><span><kbd>Backspace</kbd> usuwa</span></span>
     </div>
     <div class="accents" aria-label="Akcenty">
-      <span>Akcenty: kliknij, żeby wstawić w pole i skopiować</span>
+      <span title="Kliknij: wstawia w pole i kopiuje">Akcenty</span>
       <div class="acc" id="acc">
         <button type="button">à</button><button type="button">è</button><button type="button">é</button><button type="button">ì</button><button type="button">ò</button><button type="button">ù</button><button type="button">È</button><button type="button">À</button>
       </div>
-      <span>albo wpisz <kbd>e`</kbd> → è</span>
+      <span><kbd>e`</kbd> → è</span>
     </div>
   </section>
 
@@ -751,11 +757,12 @@ function renderLevel(flash){
   $("lvl-sub").textContent = la ? (lv==="B1" ? `B1 · ${pr}% drogi przez B1` : `${pr}% drogi do ${LVL_NEXT[lv]} · ${CONF[la.confidence]}`) : "start · pierwsza ocena po tygodniu lekcji";
   const due=assessmentDue();
   $("lvl-date").innerHTML = (la?`ocena z ${esc(fmtDay(la.week_end))}`:"") + (due?`${la?" · ":""}<span class="lvl-due">czas na ocenę tygodnia</span>`:"");
-  $("lvl-track").innerHTML=LEVELS.map((L,i)=>`<div class="lvl-seg${i<idx?" done":""}${i===idx?" now":""}"><i></i><span>${L}</span></div>`).join("");
+  $("lvl-track").innerHTML=`<div class="vial"><i class="vial-fill"></i>${[1,2,3,4].map(k=>`<span class="vial-tick" style="left:${k*20}%"></span>`).join("")}</div>`
+    +`<div class="vial-lbl">${LEVELS.map((L,i)=>`<span class="${i<idx?"done":""}${i===idx?"now":""}">${L}</span>`).join("")}</div>`;
   $("lvl-track").setAttribute("aria-valuenow", String(Math.round((idx*100+pr)/LEVELS.length)));
   $("lvl-track").setAttribute("aria-valuetext", `${lv}, ${pr}% do kolejnego poziomu`);
-  const nowSeg=$("lvl-track").children[idx].querySelector("i");
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{ nowSeg.style.width=pr+"%"; }));
+  const fillEl=$("lvl-track").querySelector(".vial-fill"), total=(idx*100+pr)/LEVELS.length;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ fillEl.style.width=`max(20px, calc(${total}% - 6px))`; }));
   const more=$("lvl-more");
   if(!la){ more.innerHTML=`<p>Pasek pokazuje szacunek Claude według skali CEFR (A1 → B1), robiony raz w tygodniu na podstawie Twoich lekcji. Pierwszą ocenę zrobisz w zakładce <b>Ocena tygodnia</b> na dole strony.</p><div class="btns"><button type="button" class="primary" id="lvl-go">Przejdź do oceny tygodnia</button></div>`; }
   else {

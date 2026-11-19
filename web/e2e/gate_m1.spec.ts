@@ -29,7 +29,8 @@ function snapshot(page: Page) {
     const v = (sel: string) => (document.querySelector(sel) as HTMLInputElement | null)?.value ?? "";
     return {
       level: [t("#lvl-name"), t("#lvl-sub"), t("#lvl-date"), t("#eyebrow-lvl")],
-      segments: [...document.querySelectorAll(".lvl-seg")].map((s) => s.className),
+      segments: [...document.querySelectorAll(".vial-lbl span")].map((s) => s.className + ":" + s.textContent),
+      meter: document.querySelector("#lvl-track")?.getAttribute("aria-valuenow"),
       date: [t("#l-display"), t("#l-display-pl")],
       stats: t("#stats"),
       title: v("#l-title"),
