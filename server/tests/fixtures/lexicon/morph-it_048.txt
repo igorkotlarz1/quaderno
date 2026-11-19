@@ -1,0 +1,16 @@
+finestra	finestra	NOUN-F:s
+finestre	finestra	NOUN-F:p
+parlo	parlare	VER:ind+pres+1+s
+parla	parlare	VER:ind+pres+3+s
+parlare	parlare	VER:inf+pres
+sono	essere	AUX:ind+pres+1+s
+sono	essere	VER:ind+pres+3+p
+sono	sonare	VER:ind+pres+1+s
+è	essere	AUX:ind+pres+3+s
+la	la	ART-F:s
+piano	piano	NOUN-M:s
+piano	piano	ADJ:pos+m+s
+piano	piano	ADV
+tavolo	tavolo	NOUN-M:s
+tavoli	tavolo	NOUN-M:p
+ciao	ciao	INT

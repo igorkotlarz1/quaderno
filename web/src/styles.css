@@ -86,6 +86,7 @@ button.danger{border-color:var(--red);color:var(--red)}
   .row{grid-template-columns:2.4rem 1fr 4.6rem;grid-template-areas:"n it del" "n pl kind"}
   .row .n{grid-area:n}.row .it{grid-area:it}.row .pl{grid-area:pl;border-left:0;border-top:1px dashed var(--line)}
   .row .kind{grid-area:kind}.row .del{grid-area:del}
+  .row:has(.chips){grid-template-areas:"n it del" "n pl kind" "n chips chips"}.chips{grid-area:chips;padding-top:4px}
 }
 .add{display:flex;align-items:center;gap:14px;padding:12px;flex-wrap:wrap;background:var(--sheet);border-top:1.5px solid var(--ink)}
 .keys{font-size:.84rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 14px}
@@ -98,6 +99,13 @@ kbd{font-family:var(--f-it);font-size:.74rem;border:1px solid var(--line);border
 .acc button:hover{border-color:var(--red);color:var(--red);background:var(--paper)}
 .acc button.hit{background:var(--red);border-color:var(--red);color:var(--red-ink)}
 .row input.it.fixed{text-decoration:underline dotted var(--ok);text-underline-offset:4px}
+/* M3.5: dictionary suggestions under a row, and translations taken from them */
+.row input.pl.fromdict{text-decoration:underline dotted var(--muted);text-underline-offset:4px}
+.chips{grid-column:2/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:0 12px 10px;font-size:.85rem}
+.chips span{font-family:var(--f-it);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.chips button{font:inherit;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--sheet);color:var(--ink);cursor:pointer}
+.chips button:hover,.chips button:focus-visible{border-color:var(--ink)}
+.lexsrc{font-size:.88rem;padding-left:1.1rem}.lexsrc li{margin:.35rem 0}
 
 /* verbs */
 .verbsec{display:flex;flex-direction:column;gap:14px}
@@ -175,7 +183,8 @@ kbd{font-family:var(--f-it);font-size:.74rem;border:1px solid var(--line);border
 .wk{width:100%;min-height:90px;font-family:var(--f-ui);font-size:.92rem}
 
 /* tools as index tabs */
-.tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.tools{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+@media (max-width:1040px){.tools{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:820px){.tools{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:460px){.tools{grid-template-columns:1fr}}
 details.tool{background:var(--sheet);border:1.5px solid var(--line);border-radius:var(--r);transition:border-color .12s,transform .12s var(--ease)}

@@ -1,0 +1,11 @@
+{"word": "finestra", "lang_code": "it", "pos": "noun", "tags": ["feminine"], "senses": [{"glosses": ["okno"], "sense_index": "1.1"}]}
+{"word": "parlare", "lang_code": "it", "pos": "verb", "senses": [{"glosses": ["mówić, rozmawiać"], "sense_index": "1.1"}]}
+{"word": "essere", "lang_code": "it", "pos": "verb", "senses": [{"glosses": ["być"], "sense_index": "1.1"}, {"glosses": ["kosztować"], "sense_index": "1.2"}]}
+{"word": "sonare", "lang_code": "it", "pos": "verb", "senses": [{"glosses": ["dzwonić"], "sense_index": "1.1"}]}
+{"word": "sono", "lang_code": "it", "pos": "verb", "senses": [{"glosses": ["1. lp, tryb oznajmujący czasu teraźniejszego (presente indicativo) od: essere"], "sense_index": "1.1", "form_of": [{"word": "essere"}]}]}
+{"word": "piano", "lang_code": "it", "pos": "noun", "senses": [{"glosses": ["(rysunek) plan, rzut poziomy"], "sense_index": "1.7"}, {"glosses": ["piętro"], "sense_index": "1.5"}, {"glosses": ["fortepian"], "sense_index": "1.10"}]}
+{"word": "piano", "lang_code": "it", "pos": "adv", "senses": [{"glosses": ["powoli, wolno"], "sense_index": "2.1"}]}
+{"word": "ciao", "lang_code": "it", "pos": "intj", "senses": [{"glosses": ["cześć!, serwus!, witaj!; do zobaczenia!"], "sense_index": "1.1"}]}
+{"word": "tavolo", "lang_code": "it", "pos": "noun", "senses": [{"glosses": ["stół"], "sense_index": "1.1"}, {"glosses": ["zob. tavola"], "sense_index": "1.2"}]}
+{"word": "casa", "lang_code": "en", "pos": "noun", "senses": [{"glosses": ["not Italian, skipped"]}]}
+{"word": "grazie", "lang_code": "it", "pos": "intj", "senses": [{"glosses": ["dziękuję [1]"], "sense_index": "1.1"}]}

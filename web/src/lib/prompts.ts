@@ -16,7 +16,8 @@ Poniżej JSON z jednej lekcji. Zadania:
 2. Dla każdej pozycji z "pl": null wpisz polskie tłumaczenie i ustaw "pl_source": "llm".
 3. Popraw "kind" ("word" albo "phrase"), a dla słów dodaj "pos" (noun, verb, adj, adv, other) i "lemma" (forma słownikowa; dla rzeczowników z rodzajnikiem, np. "la casa").
 4. W tablicy "verbs" są tylko czasowniki, których aplikacja nie odmieniła na pewno (pozostałe zostają w aplikacji, nie dopisuj ich). Dla każdego wpisz "forms" w czasie presente indicativo dla osób io, tu, lui (lui/lei), noi, voi, loro, z poprawnymi akcentami, uzupełnij "pl" (znaczenie), jeśli jest null, i ustaw "forms_source": "llm". Pola "revealed" nie zmieniaj.
-5. Nie zmieniaj pól "id", "date", nie usuwaj pozycji.
+5. Pozycje z "pl_source": "dict" mają tłumaczenie z automatycznego słownika. Zmień je tylko, gdy wyraźnie nie pasują do włoskiego (wtedy ustaw "pl_source": "llm").
+6. Nie zmieniaj pól "id", "date", nie usuwaj pozycji.
 Zwróć WYŁĄCZNIE poprawny JSON lekcji (bez komentarza), żebym mógł go wkleić z powrotem do aplikacji.
 Pozycji bez tłumaczenia: ${nulls}. Czasowników do sprawdzenia: ${vcheck}.
 

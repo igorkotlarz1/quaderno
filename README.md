@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/igorkotlarz1/quaderno/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/igorkotlarz1/quaderno/ci.yml?branch=main&style=for-the-badge&label=CI&logo=githubactions&logoColor=white" alt="CI"></a>
-  <img src="https://img.shields.io/badge/next-M3_of_8-c8321b?style=for-the-badge" alt="Next milestone">
+  <img src="https://img.shields.io/badge/next-M3.5_of_8-c8321b?style=for-the-badge" alt="Next milestone">
   <img src="https://img.shields.io/badge/obiettivo-A1_→_B1-009246?style=for-the-badge" alt="Goal">
   <img src="https://img.shields.io/badge/lingua-italiano_🇮🇹-ce2b37?style=for-the-badge" alt="Language">
 </p>
@@ -81,9 +81,11 @@ Type an infinitive into **Czasowniki** (verbs), e.g. `parlare`. You get a *prese
 
 The app conjugates regular -are / -ere / -ire verbs (including -isc-, -care/-gare, -iare, reflexive -rsi) and about 40 common irregular ones by itself. Anything it isn't sure about is marked *do sprawdzenia* (to check) and goes to the AI. The rest never costs a token.
 
-### 3 · After the lesson: let the AI tidy up
+### 3 · After the lesson: the dictionary first, then the AI
 
-Open **Uzupełnij z Claude** (fill in with Claude) → copy the prompt → paste Claude's JSON answer into **Eksport i import**. It:
+Under every row without a translation the app shows up to three Polish meanings from its **offline dictionary** (M3.5): `le finestre` → **okno**. Nothing is filled in until you tap one, because many words have several meanings. **Słownik offline → Uzupełnij ze słownika** fills all the NULLs it knows with the most common meaning in one go, marked `pl_source: "dict"` and underlined with dots. It works in airplane mode and costs nothing. How the dictionary is made and whose work it is: [📚 The offline dictionary](#-the-offline-dictionary-data-method-credits).
+
+What the dictionary does not know goes to the AI. Open **Uzupełnij z Claude** (fill in with Claude) → copy the prompt → paste Claude's JSON answer into **Eksport i import**. It:
 
 - fills the NULLs,
 - fixes accents (`caffe'` → `caffè`; the old spelling stays visible as a dotted underline),
@@ -105,6 +107,38 @@ With the server running (M2), open the same address on the phone. Today's lesson
 - **Wklej stare notatki** (paste old notes): paste lines like `la casa – dom` from an old notebook and they become rows.
 - **Eksport i import**: a JSON export of everything (schema version 1) to back up or move between devices.
 
+## 📚 The offline dictionary: data, method, credits
+
+Most Italian you hear in conversation is a small set of words: in the subtitle corpus below, the **1,000 most frequent lemmas cover about 86 % of all running words, and 5,000 cover about 94 %** (measured on the frequency list with Morph-it! lemmas; an upper bound, since not every lemma has a Polish entry yet). So instead of asking an LLM to translate *finestra* for the hundredth time, the server keeps an Italian→Polish dictionary built from open data, and the phone keeps the top 5,000 lemmas for offline use. The LLM only sees what the dictionary does not know.
+
+**No dataset is stored in this repository.** `python -m app.lexicon.build` downloads the files on the server, checks their SHA-256 (pinned for the files that never change), and loads the result into Postgres (`lex_lemmas`, `lex_forms`, `lex_meta`). The hash of every file used is kept in `lex_meta`, so each build can be traced back to its exact sources.
+
+### Sources and licenses
+
+| Data set | What we take from it | Authors | License |
+|---|---|---|---|
+| [FrequencyWords](https://github.com/hermitdave/FrequencyWords), Italian 50k (2018) | how often each word form is used in spoken Italian (film and TV subtitles) | Hermit Dave; built from the [OpenSubtitles](https://www.opensubtitles.org) 2018 corpus as published by [OPUS](https://opus.nlpl.eu) (P. Lison, J. Tiedemann, *OpenSubtitles2016*, LREC 2016) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| [Morph-it!](https://docs.sslmit.unibo.it/doku.php?id=resources:morph-it) 0.4.8 | which dictionary form an inflected form belongs to (*finestre* → *finestra*, *parlo* → *parlare*) | Marco Baroni, Eros Zanchetta (SSLMIT, University of Bologna) | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) / LGPL |
+| [Wikisłownik](https://pl.wiktionary.org) (Polish Wiktionary), Italian entries, via [kaikki.org](https://kaikki.org/plwiktionary/) | the Polish meanings of each Italian word, in Wiktionary's order | Wikisłownik contributors; extracted with [wiktextract](https://github.com/tatuylonen/wiktextract) by Tatu Ylonen (*Wiktextract: Wiktionary as Machine-Readable Structured Data*, LREC 2022) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) and GFDL |
+
+The same list, with links, is shown in the app under **Słownik offline → Źródła słownika** (it comes from the server together with the data). Thank you to all of them: this feature exists because they published their work openly.
+
+### Method
+
+1. **Meanings** come from Wikisłownik only: Italian entries (`lang_code = it`) with at least one Polish gloss. Up to 6 senses per part of speech, in the order the entry lists them. Qualifiers like *(rysunek)* become a note, footnote marks are dropped, and pure cross-references (*zob. …*) are skipped. Entries that only say "a form of X" are used to link forms, not as meanings.
+2. **Forms → lemma.** Every word form is linked to its lemma(s) from Morph-it! and from Wikisłownik's "form of" entries; a lemma always counts as its own form. Lemmas with no Polish meaning are left out.
+3. **Frequency.** Each form's count from the subtitle list goes to its lemma. A form that belongs to several lemmas (*sono* = *essere* or *sonare*) is split in proportion to how often those lemmas occur on their own, so *essere* gets almost all of it.
+4. **Rank.** Lemmas are sorted by that frequency. The phone downloads the top 5,000 (with only the forms that actually occur in the corpus) and keeps them in IndexedDB; the server answers `/api/lexicon/lookup` for everything else.
+5. **Lookup.** What you typed is lower-cased, the article is removed (*la*, *gli*, *l'*, *un'* …) and the form is looked up exactly, then without accents (*citta* → *città*). Suggestions are ordered by lemma frequency.
+
+### Honest limits
+
+- The dictionary does not read context: for *sono* it offers *być* first, even in *sono le tre* or a sentence about bells. That is why it only **suggests**, and why every filled-in translation is marked `pl_source: "dict"` and can be changed.
+- Glosses are copied as Wikisłownik writes them, so some are long (*cześć!, serwus!, witaj!; do zobaczenia!*) and a few may be wrong or missing. Corrections belong upstream, in Wikisłownik, where they help everyone.
+- Subtitles over-represent spoken, informal Italian. For a beginner in conversation classes that is a feature.
+- Whole phrases are not in the dictionary; they go to the LLM.
+- The built dictionary is a derivative of CC BY-SA data, so if it is ever shared with others (M8), it stays under CC BY-SA with these credits.
+
 ## 🎯 Use cases
 
 | Who / when | What Quadernote does |
@@ -114,6 +148,7 @@ With the server running (M2), open the same address on the phone. Today's lesson
 | **Sunday evening** | Weekly level check: one prompt, one JSON, the vial moves (or doesn't, honestly) |
 | **An old paper notebook** | Paste the old notes now; from M6, take a photo of the page instead |
 | **"Did I already learn *finestra*?"** | One place for every lesson; semantic search ("words about the house") in M8 |
+| **A word you met for the 50th time** | The offline dictionary suggests *okno* for *le finestre*; no API call, no cost |
 | **The server is off** | The app keeps working on the device and syncs when the server is back |
 | **Another learner** (my next step) | The same pipeline is the seed of a tutoring platform: lesson capture → LLM cleanup → spaced repetition → progress reports for parents and tutors |
 
@@ -223,7 +258,8 @@ Each milestone has a **gate**: one sentence that must be true on a real lesson, 
 |---|---|---|---|
 | M1 | React + Vite + TS port | importing the old JSON export shows the same view as the original app | ✅ done |
 | M2 | FastAPI + Postgres on the OptiPlex, Tailscale, backups | phone and laptop see the same lesson; a trial restore works | ✅ done |
-| M3 | Offline-first PWA (IndexedDB + service worker) | a lesson typed in airplane mode syncs when the network is back | 🟡 in review |
+| M3 | Offline-first PWA (IndexedDB + service worker) | a lesson typed in airplane mode syncs when the network is back | ✅ done |
+| M3.5 | Offline Italian→Polish dictionary from open data | a top-5000 word typed in airplane mode gets a Polish suggestion without the API | 🟡 in review |
 | M4 | "Opracuj lekcję" through the Claude API | one click instead of the manual prompt; cost of every call logged | ⚪ |
 | M5 | Spaced repetition (FSRS) | the app picks what to review every day | ⚪ |
 | M6 | Notebook OCR (vision) + review screen | photo of a page → checked words in the lesson | ⚪ |
@@ -240,6 +276,7 @@ Details and out-of-scope list: [docs/MILESTONES.md](docs/MILESTONES.md) · what 
 cp .env.example .env            # set POSTGRES_PASSWORD (e.g. openssl rand -hex 24)
 docker compose up -d --build    # db (Postgres 17 + pgvector), api (FastAPI + the app), backup (nightly)
 curl -s localhost:8000/api/health
+docker compose exec api python -m app.lexicon.build   # downloads the open data sets and builds the dictionary
 sudo tailscale serve --bg 8000  # HTTPS address inside your tailnet
 ```
 
@@ -258,7 +295,8 @@ npm ci
 npm run dev                     # http://localhost:5173, /api is proxied to :8000
 npm test                        # unit tests (Vitest)
 npm run e2e                     # gate M1 (Playwright, vite preview)
-npm run e2e:server              # gates M2 + M3, against an EMPTY compose stack
+npm run e2e:server              # gates M2, M3, M3.5, against an EMPTY compose stack
+                                # (first: docker compose exec api python -m app.lexicon.build --from tests/fixtures/lexicon)
 ```
 
 The animated SVGs in this README are generated: `python3 scripts/readme_assets.py`. PWA icons: `cd web && node scripts/pwa-icons.mjs`.

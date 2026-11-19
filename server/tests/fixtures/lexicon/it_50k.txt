@@ -1,0 +1,12 @@
+è 2559257
+la 3887197
+sono 2005178
+finestra 9000
+finestre 4000
+parlo 7000
+parla 9000
+parlare 11000
+piano 15000
+ciao 120000
+tavolo 6000
+grazie 90000
