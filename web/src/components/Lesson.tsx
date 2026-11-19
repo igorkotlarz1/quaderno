@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { filled, newEntry, newLesson } from "../lib/model";
 import { useStore } from "../lib/store";
+import { useSync } from "../lib/sync";
 import { useToast } from "./ui";
 
 /** Lesson title and date under the masthead. */
@@ -64,6 +65,16 @@ export function Footer() {
           </span>
         )}
       </span>
+      <SyncBadge />
     </footer>
   );
+}
+
+/** Sync status, shown only when a server was found (M2). */
+function SyncBadge() {
+  const y = useSync();
+  if (y.status === "local") return null;
+  const time = y.lastOk ? y.lastOk.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" }) : "";
+  const text = { syncing: "Synchronizuję…", ok: `Zapisane na serwerze ${time}`, offline: "Brak połączenia z serwerem, zapisuję lokalnie" }[y.status];
+  return <span id="sync" className={"sync sync-" + y.status} role="status">{text}</span>;
 }
