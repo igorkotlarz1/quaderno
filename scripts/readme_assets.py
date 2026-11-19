@@ -333,8 +333,8 @@ def architecture(c):
 
 MILESTONES = [
     ("M1", "React + TS port", "1:1 with the Artifact", "done"),
-    ("M2", "Server · sync", "OptiPlex, backups", "review"),
-    ("M3", "Offline PWA", "IndexedDB, airplane mode", "todo"),
+    ("M2", "Server · sync", "OptiPlex, backups", "done"),
+    ("M3", "Offline PWA", "IndexedDB, airplane mode", "review"),
     ("M4", "Claude API", "“Opracuj lekcję” in 1 click", "todo"),
     ("M5", "FSRS reviews", "what to repeat today", "todo"),
     ("M6", "Notebook OCR", "photo → checked words", "todo"),
@@ -360,12 +360,12 @@ def milestones(c):
     p.append(f'<path d="{d}" fill="none" stroke="{c["muted"]}" stroke-width="1.6" stroke-dasharray="2 9" stroke-linecap="round"/>')
 
     # done part of the road in green
-    x0, y0 = pts[0]
-    x1, y1 = pts[1]
-    mx = (x0 + x1) / 2
-    done = f"M {x0} {y0} C {mx} {y0}, {mx} {y1}, {x1} {y1}"
-    p.append(f'<path d="{done}" fill="none" stroke="{c["verde"]}" stroke-width="4" stroke-linecap="round" stroke-dasharray="200" stroke-dashoffset="200">'
-             f'<animate attributeName="stroke-dashoffset" values="200;0;0" keyTimes="0;0.35;1" dur="6s" repeatCount="indefinite"/></path>')
+    done = f"M {pts[0][0]} {pts[0][1]}"
+    for (x0, y0), (x1, y1) in zip(pts[:2], pts[1:3]):
+        mx = (x0 + x1) / 2
+        done += f" C {mx} {y0}, {mx} {y1}, {x1} {y1}"
+    p.append(f'<path d="{done}" fill="none" stroke="{c["verde"]}" stroke-width="4" stroke-linecap="round" stroke-dasharray="400" stroke-dashoffset="400">'
+             f'<animate attributeName="stroke-dashoffset" values="400;0;0" keyTimes="0;0.35;1" dur="6s" repeatCount="indefinite"/></path>')
 
     for i, ((x, y), (m, name, sub, status)) in enumerate(zip(pts, MILESTONES)):
         rx, ry = 30, 23
@@ -393,7 +393,7 @@ def milestones(c):
             ty, ty2 = y - 58, y - 40
         p.append(t(x, ty, name, 14, c["ink"], UI, 700, "middle"))
         p.append(t(x, ty2, sub, 11.5, c["muted"], MONO, 400, "middle"))
-        tag = {"done": "✓ done", "review": "● in review", "todo": ""}[status]
+        tag = {"done": "✓ done", "review": "● next", "todo": ""}[status]
         if tag:
             col = c["verde"] if status == "done" else c["red"]
             p.append(t(x, (ty2 + 18) if i % 2 == 0 else (ty - 20), tag, 11.5, col, MONO, 700, "middle"))
@@ -401,7 +401,7 @@ def milestones(c):
     # the little scooter-red dot travelling to the current pebble
     p.append(f'<circle r="6" fill="{c["red"]}" stroke="{c["sheet"]}" stroke-width="2"><animateMotion path="{done}" dur="6s" keyPoints="0;1;1" keyTimes="0;0.35;1" calcMode="linear" repeatCount="indefinite"/>'
              f'<animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.33;0.37;1" dur="6s" repeatCount="indefinite"/></circle>')
-    return frame(W, H, c, "\n".join("    " + x for x in p), "Milestones M1 to M8 as pebbles on a path: M1 done, M2 in review, M3 to M8 planned.")
+    return frame(W, H, c, "\n".join("    " + x for x in p), "Milestones M1 to M8 as pebbles on a path: M1 and M2 done, M3 next, M4 to M8 planned.")
 
 
 # ---------------------------------------------------------------- footer
