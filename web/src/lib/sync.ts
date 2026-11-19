@@ -1,4 +1,4 @@
-// Keeps this device in step with the Quaderno server (M2). Without a server (vite preview, the old
+// Keeps this device in step with the Quadernote server (M2). Without a server (vite preview, the old
 // single-file app), it stays quiet and the app works on localStorage alone, as in M1.
 import { useSyncExternalStore } from "react";
 import { store } from "./store";

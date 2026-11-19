@@ -1,4 +1,4 @@
-# Quaderno API + built web app in one image (M2).
+# Quadernote API + built web app in one image (M2).
 # Stage 1 builds the React app; stage 2 is the Python server that also serves it.
 FROM node:22-slim AS web
 WORKDIR /web

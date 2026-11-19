@@ -1,4 +1,4 @@
-# Quaderno on the Optiplex (M2). Secrets come from .env (copy .env.example), never from this file.
+# Quadernote on the Optiplex (M2). Secrets come from .env (copy .env.example), never from this file.
 name: quaderno
 
 services:

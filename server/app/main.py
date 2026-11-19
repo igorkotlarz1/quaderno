@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from .api import router
 from .settings import settings
 
-app = FastAPI(title="Quaderno", version="0.2.0")
+app = FastAPI(title="Quadernote", version="0.2.0")
 app.include_router(router)
 
 # Serve the built React app from the same origin, so the phone only needs one address.

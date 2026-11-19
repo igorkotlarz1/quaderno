@@ -4,6 +4,7 @@ Pure SVG + SMIL, no scripts and no web fonts, so GitHub renders them inside <img
 Run from the repo root:  python3 scripts/readme_assets.py
 """
 
+import json
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -34,6 +35,18 @@ def t(x, y, text, size, fill, family=UI, weight=400, anchor="start", extra=""):
     return (
         f'<text x="{x}" y="{y}" font-family="{family}" font-size="{size}" font-weight="{weight}" '
         f'fill="{fill}" text-anchor="{anchor}" {extra}>{escape(text)}</text>'
+    )
+
+
+def wordmark(c, x, baseline, size):
+    """The outlined "quadernotè" wordmark (scripts/wordmark.json, made by brand_assets.py), font size in px."""
+    wm = json.loads((Path(__file__).with_name("wordmark.json")).read_text(encoding="utf-8"))
+    a, k = wm["accent"], size / 1000
+    return (
+        f'<g transform="translate({x} {baseline}) scale({k})">'
+        f'<path d="{wm["quader"]}" fill="{c["ink"]}"/><path d="{wm["note"]}" fill="{c["red"]}"/>'
+        f'<line x1="{a["x1"]}" y1="{a["y1"]}" x2="{a["x2"]}" y2="{a["y2"]}" stroke="{c["red"]}" '
+        f'stroke-width="{a["w"]}" stroke-linecap="round"/></g>'
     )
 
 
@@ -118,13 +131,13 @@ def header(c):
 
     # kicker, title, subtitle
     parts.append(t(132, 64, "IL MIO QUADERNO D’ITALIANO  ·  A1 → B1", 14, c["red"], MONO, 600, extra='letter-spacing="2.5"'))
-    parts.append(t(128, 146, "Quaderno", 96, c["ink"], DISPLAY, 800, extra='letter-spacing="-2"'))
+    parts.append(wordmark(c, 128, 146, 96))
     parts.append(
         t(132, 184, "Type fast during the lesson. Let AI tidy it up after. Watch your level fill up.", 19, c["muted"], UI)
     )
 
     # espresso cup with steam, right after the title
-    cx, cy = 690, 116
+    cx, cy = 724, 116
     steam = []
     for i, dx in enumerate((-10, 0, 10)):
         steam.append(
@@ -242,7 +255,7 @@ def header(c):
     parts.append(t(lx + lw, ly + lh + 20, "estimated by AI every week", 11, c["muted"], MONO, 500, "end"))
 
     body = "<defs>" + "".join(defs) + "</defs>\n" + "\n".join("    " + p for p in parts)
-    return frame(W, H, c, body, "Quaderno: a personal Italian notebook. Italian words typed in class, AI fills the gaps, verbs reveal their forms, the CEFR level fills a vial.")
+    return frame(W, H, c, body, "Quadernotè: a personal Italian notebook. Italian words typed in class, AI fills the gaps, verbs reveal their forms, the CEFR level fills a vial.")
 
 
 # ---------------------------------------------------------------- architecture
@@ -284,7 +297,7 @@ def flow(c, d, dur, begin=0.0, color=None, dashed=False, back=False):
 def architecture(c):
     W, H = 1200, 520
     p = [tricolore_strip(c, 0, W, 4)]
-    p.append(t(40, 52, "How Quaderno fits together", 24, c["ink"], DISPLAY, 800))
+    p.append(t(40, 52, "How Quadernote fits together", 24, c["ink"], DISPLAY, 800))
     p.append(t(40, 78, "Two devices, one notebook. Everything lives at home on the OptiPlex; nothing is exposed to the internet.", 14, c["muted"], UI))
 
     # devices

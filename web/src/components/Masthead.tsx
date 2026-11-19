@@ -30,7 +30,7 @@ export function Masthead() {
   return (
     <header className="mast" data-enter="1">
       <div>
-        <div className="eyebrow"><b>Quaderno</b><span id="eyebrow-lvl">italiano · {lv}</span></div>
+        <div className="eyebrow"><b>Quadernote</b><span id="eyebrow-lvl">italiano · {lv}</span></div>
         <ItalianDate date={l.date} />
         <div className="date-pl" id="l-display-pl">{datePl}</div>
       </div>
