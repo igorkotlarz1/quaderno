@@ -70,7 +70,7 @@ test("a known word typed offline gets a Polish suggestion; the prompt keeps only
   await expect(page.locator("#dict-sources li")).toHaveCount(3);
 
   // 6. The prompt for Claude: only the unknown word is still a NULL to translate.
-  await page.locator("#t-llm summary").click();
+  await page.locator("#t-llm > summary").click();
   await page.locator("#copy-prompt").click();
   const prompt = await page.evaluate(() => navigator.clipboard.readText());
   expect(prompt).toContain("Pozycji bez tłumaczenia: 1.");

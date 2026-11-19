@@ -1,6 +1,7 @@
-import { forwardRef, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { useLexicon } from "../lib/lexicon";
-import { weekPayload, weekWindow } from "../lib/level";
+import { applyLessonFix, fmtCost, llmStatus, requestLessonFix, requestWeek, type LlmStatus } from "../lib/llm";
+import { importAssessments, weekPayload, weekWindow } from "../lib/level";
 import { exportAll, filled, importJson, newEntry, parseNotes, verbsOf } from "../lib/model";
 import { lessonPrompt, weekPrompt } from "../lib/prompts";
 import { useStore } from "../lib/store";
@@ -30,6 +31,52 @@ export const Tools = forwardRef<HTMLDetailsElement, { onLevelImported: () => voi
     s.update(() => { for (const e of known) { e.pl = lex.suggest(e.it, 1)[0]; e.pl_source = "dict"; } }, { reset: true });
     const left = nulls.length - known.length;
     toast(`Uzupełniono ${plw(known.length, "pozycję", "pozycje", "pozycji")}` + (left ? `, dla Claude zostaje ${left}` : ""));
+  }
+
+  // M4: one click through the server. `llm` is null without a server; `enabled` is false without an API key.
+  const [llm, setLlm] = useState<LlmStatus | null>(null);
+  const [busy, setBusy] = useState<"lesson" | "week" | null>(null);
+  const refreshLlm = useCallback(() => { void llmStatus().then(setLlm); }, []);
+  useEffect(refreshLlm, [refreshLlm]);
+
+  async function opracuj() {
+    const id = s.cur.id;
+    setBusy("lesson");
+    try {
+      const { fix, sent } = await requestLessonFix(s.cur);
+      const lesson = s.state.lessons.find((l) => l.id === id);
+      if (!lesson) return;
+      let n = { translated: 0, accents: 0, verbs: 0, suggestions: 0 };
+      s.update(() => { n = applyLessonFix(lesson, fix, sent); }, { reset: true, now: true });
+      const parts = [
+        n.translated && `przetłumaczył ${n.translated}`,
+        n.accents && `poprawił akcenty: ${n.accents}`,
+        n.verbs && `odmienił ${plw(n.verbs, "czasownik", "czasowniki", "czasowników")}`,
+        n.suggestions && `sugestie literówek: ${n.suggestions}`,
+      ].filter(Boolean);
+      toast(`Claude ${parts.length ? parts.join(", ") : "nie znalazł nic do poprawy"}` + (fix.call ? ` · koszt ${fmtCost(fix.call.cost_usd)}` : ""));
+    } catch (e) {
+      toast((e as Error).message);
+    } finally {
+      setBusy(null);
+      refreshLlm();
+    }
+  }
+
+  async function ocenTydzien() {
+    setBusy("week");
+    try {
+      const r = await requestWeek(weekPayload(s.state, clean(notes)));
+      let stored = 0;
+      s.update(() => { stored = importAssessments(s.state, { assessment: r.assessment }); }, { now: true, touch: false });
+      if (stored) { onLevelImported(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+      toast((stored ? "Nowa ocena poziomu zapisana" : "Claude nie zwrócił oceny") + (r.call ? ` · koszt ${fmtCost(r.call.cost_usd)}` : ""));
+    } catch (e) {
+      toast((e as Error).message);
+    } finally {
+      setBusy(null);
+      refreshLlm();
+    }
   }
 
   const { start, end } = weekWindow(s.state);
@@ -78,24 +125,36 @@ export const Tools = forwardRef<HTMLDetailsElement, { onLevelImported: () => voi
       </details>
 
       <details className="tool" id="t-llm">
-        <summary><b>Uzupełnij z Claude</b><small>Prompt z tą lekcją, po zajęciach</small></summary>
+        <summary><b>Uzupełnij z Claude</b><small>{llm?.enabled ? "Jeden klik po zajęciach" : "Prompt z tą lekcją, po zajęciach"}</small></summary>
         <div className="body">
-          <p>Kopiuje gotowy prompt z tą lekcją w JSON. Wklej go do Claude, a odpowiedź (sam JSON) wklej w „Eksport i import”. Pozycje uzupełnione przez model dostaną znacznik <code>pl_source: "llm"</code>. Najpierw użyj „Słownika offline”: do Claude trafi tylko to, czego słownik nie zna.</p>
-          <div className="btns"><button className="primary" id="copy-prompt" type="button" onClick={() => copyText(lessonPrompt(s.cur), toast, promptOut.current)}>Kopiuj prompt</button></div>
+          {llm?.enabled ? (
+            <p>Claude poprawia akcenty, tłumaczy brakujące pozycje, dopisuje część mowy i formę słownikową, a odmienia tylko czasowniki „do sprawdzenia”. Najpierw użyj „Słownika offline”: do Claude trafi tylko to, czego słownik nie zna. Tłumaczenia od Claude mają znacznik <code>pl_source: "llm"</code>; to, co wpiszesz w trakcie, zostaje.</p>
+          ) : (
+            <p>Kopiuje gotowy prompt z tą lekcją w JSON. Wklej go do Claude, a odpowiedź (sam JSON) wklej w „Eksport i import”. Pozycje uzupełnione przez model dostaną znacznik <code>pl_source: "llm"</code>. Najpierw użyj „Słownika offline”: do Claude trafi tylko to, czego słownik nie zna.
+              {llm && " Jeden klik zamiast kopiowania zadziała, gdy serwer dostanie klucz ANTHROPIC_API_KEY (runbook M4)."}</p>
+          )}
+          <div className="btns">
+            {llm?.enabled && <button className="primary" id="llm-lesson" type="button" disabled={!!busy} onClick={() => void opracuj()}>{busy === "lesson" ? "Claude pracuje…" : "Opracuj lekcję"}</button>}
+            <button className={llm?.enabled ? "" : "primary"} id="copy-prompt" type="button" onClick={() => copyText(lessonPrompt(s.cur), toast, promptOut.current)}>{llm?.enabled ? "Kopiuj prompt (ręcznie)" : "Kopiuj prompt"}</button>
+          </div>
           <textarea id="prompt-out" ref={promptOut} readOnly aria-label="Prompt dla LLM" hidden />
+          {llm?.enabled && <Costs llm={llm} />}
         </div>
       </details>
 
       <details className="tool" id="t-week" ref={weekRef}>
         <summary><b>Ocena tygodnia</b><small>Claude szacuje Twój poziom A1 → B1</small></summary>
         <div className="body">
-          <p>Na koniec tygodnia skopiuj prompt: zawiera słówka, zdania i czasowniki z ostatnich 7 dni, statystyki całości i poprzednią ocenę. Odpowiedź Claude (sam JSON) wklej w „Eksport i import”, a pasek na górze się zaktualizuje.</p>
+          {llm?.enabled
+            ? <p>Na koniec tygodnia kliknij „Oceń tydzień”. Claude dostaje słówka, zdania i czasowniki z ostatnich 7 dni, statystyki całości i poprzednią ocenę, a pasek na górze sam się zaktualizuje. Prompt do ręcznego wklejenia nadal działa.</p>
+            : <p>Na koniec tygodnia skopiuj prompt: zawiera słówka, zdania i czasowniki z ostatnich 7 dni, statystyki całości i poprzednią ocenę. Odpowiedź Claude (sam JSON) wklej w „Eksport i import”, a pasek na górze się zaktualizuje.</p>}
           <label className="field"><span>Co jeszcze robiłeś w tym tygodniu (opcjonalnie)</span>
             <textarea className="wk" id="wk-notes" value={notes} onChange={(ev) => setNotes(ev.currentTarget.value)}
               placeholder="np. zadanie domowe z przeczeniem zrobione bez błędów, rozmowa 10 min o rodzinie, trudność: rodzajniki" />
           </label>
           <div className="btns">
-            <button className="primary" id="wk-prompt" type="button" onClick={() => copyText(weekPrompt(weekPayload(s.state, clean(notes))), toast, weekOut.current)}>Kopiuj prompt oceny</button>
+            {llm?.enabled && <button className="primary" id="llm-week" type="button" disabled={!!busy} onClick={() => void ocenTydzien()}>{busy === "week" ? "Claude ocenia…" : "Oceń tydzień"}</button>}
+            <button className={llm?.enabled ? "" : "primary"} id="wk-prompt" type="button" onClick={() => copyText(weekPrompt(weekPayload(s.state, clean(notes))), toast, weekOut.current)}>{llm?.enabled ? "Kopiuj prompt (ręcznie)" : "Kopiuj prompt oceny"}</button>
             <span className="keys" id="wk-info">Okres: {fmtDay(start)} – {fmtDay(end)} · lekcji: {weekLessons}</span>
           </div>
           <textarea id="wk-out" ref={weekOut} readOnly aria-label="Prompt oceny tygodnia" hidden />
@@ -149,3 +208,30 @@ export const Tools = forwardRef<HTMLDetailsElement, { onLevelImported: () => voi
     </section>
   );
 });
+
+const PURPOSE = { lesson: "lekcja", week: "ocena tygodnia" } as const;
+
+/** What the Claude API has cost so far, and the last calls (from the server's llm_calls table). */
+function Costs({ llm }: { llm: LlmStatus }) {
+  const sp = llm.spent_usd;
+  return (
+    <details className="costs" id="llm-costs">
+      <summary>Koszty Claude: dziś {fmtCost(sp.today)}, w tym miesiącu {fmtCost(sp.month)}</summary>
+      <p className="keys">Szacunek z cennika API (kurs ≈ 4 zł/$), łącznie {fmtCost(sp.total)} ({sp.total.toFixed(4)} $). Dokładny rachunek jest w konsoli Anthropic.{llm.fake && " Tryb testowy: bez prawdziwego API."}</p>
+      <table>
+        <thead><tr><th>kiedy</th><th>co</th><th>model</th><th>tokeny</th><th>koszt</th></tr></thead>
+        <tbody>
+          {llm.calls.slice(0, 8).map((c, i) => (
+            <tr key={i} className={c.status === "ok" ? "" : "bad"}>
+              <td>{new Date(c.at).toLocaleString("pl-PL", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</td>
+              <td>{PURPOSE[c.purpose] ?? c.purpose}{c.status !== "ok" && ` (${c.status === "refusal" ? "odmowa" : "błąd"})`}</td>
+              <td>{c.model.replace(/^claude-/, "")}</td>
+              <td>{c.input_tokens} → {c.output_tokens}</td>
+              <td>{fmtCost(c.cost_usd)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </details>
+  );
+}

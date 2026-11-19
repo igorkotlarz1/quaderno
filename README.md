@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/igorkotlarz1/quaderno/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/igorkotlarz1/quaderno/ci.yml?branch=main&style=for-the-badge&label=CI&logo=githubactions&logoColor=white" alt="CI"></a>
-  <img src="https://img.shields.io/badge/next-M3.5_of_8-c8321b?style=for-the-badge" alt="Next milestone">
+  <img src="https://img.shields.io/badge/next-M4_of_8-c8321b?style=for-the-badge" alt="Next milestone">
   <img src="https://img.shields.io/badge/obiettivo-A1_→_B1-009246?style=for-the-badge" alt="Goal">
   <img src="https://img.shields.io/badge/lingua-italiano_🇮🇹-ce2b37?style=for-the-badge" alt="Language">
 </p>
@@ -85,14 +85,14 @@ The app conjugates regular -are / -ere / -ire verbs (including -isc-, -care/-gar
 
 Under every row without a translation the app shows up to three Polish meanings from its **offline dictionary** (M3.5): `le finestre` → **okno**. Nothing is filled in until you tap one, because many words have several meanings. **Słownik offline → Uzupełnij ze słownika** fills all the NULLs it knows with the most common meaning in one go, marked `pl_source: "dict"` and underlined with dots. It works in airplane mode and costs nothing. How the dictionary is made and whose work it is: [📚 The offline dictionary](#-the-offline-dictionary-data-method-credits).
 
-What the dictionary does not know goes to the AI. Open **Uzupełnij z Claude** (fill in with Claude) → copy the prompt → paste Claude's JSON answer into **Eksport i import**. It:
+What the dictionary does not know goes to the AI. Open **Uzupełnij z Claude** (fill in with Claude) → **Opracuj lekcję** (work through the lesson). One click: the server sends the lesson to the Claude API and the answer lands in the rows. Claude:
 
 - fills the NULLs,
 - fixes accents (`caffe'` → `caffè`; the old spelling stays visible as a dotted underline),
 - adds part of speech and lemma,
 - conjugates only the verbs marked *do sprawdzenia*.
 
-From M4 this becomes one button that calls the Claude API directly and logs the cost of every call.
+Only what changes is applied: a word you corrected while Claude was working stays yours. Every call is logged with model, tokens and estimated cost, visible under **Koszty Claude** (expected: about a grosz or less per lesson on Claude Haiku 5.5; the log shows the real number). The API key lives only on the server (`ANTHROPIC_API_KEY` in `.env`); without it the app falls back to the manual flow: copy the prompt, paste Claude's JSON answer into **Eksport i import**.
 
 ### 4 · Every week: where am I?
 
@@ -259,8 +259,8 @@ Each milestone has a **gate**: one sentence that must be true on a real lesson, 
 | M1 | React + Vite + TS port | importing the old JSON export shows the same view as the original app | ✅ done |
 | M2 | FastAPI + Postgres on the OptiPlex, Tailscale, backups | phone and laptop see the same lesson; a trial restore works | ✅ done |
 | M3 | Offline-first PWA (IndexedDB + service worker) | a lesson typed in airplane mode syncs when the network is back | ✅ done |
-| M3.5 | Offline Italian→Polish dictionary from open data | a top-5000 word typed in airplane mode gets a Polish suggestion without the API | 🟡 in review |
-| M4 | "Opracuj lekcję" through the Claude API | one click instead of the manual prompt; cost of every call logged | ⚪ |
+| M3.5 | Offline Italian→Polish dictionary from open data | a top-5000 word typed in airplane mode gets a Polish suggestion without the API | ✅ done |
+| M4 | "Opracuj lekcję" through the Claude API | one click instead of the manual prompt; cost of every call logged | 🟡 in review |
 | M5 | Spaced repetition (FSRS) | the app picks what to review every day | ⚪ |
 | M6 | Notebook OCR (vision) + review screen | photo of a page → checked words in the lesson | ⚪ |
 | M7 | Voice: speech-to-text + pronunciation score | the app scores the pronunciation of a single word | ⚪ |
@@ -273,7 +273,7 @@ Details and out-of-scope list: [docs/MILESTONES.md](docs/MILESTONES.md) · what 
 **On a home server** (step by step, in Polish: [docs/runbook/m2.md](docs/runbook/m2.md)):
 
 ```bash
-cp .env.example .env            # set POSTGRES_PASSWORD (e.g. openssl rand -hex 24)
+cp .env.example .env            # set POSTGRES_PASSWORD (e.g. openssl rand -hex 24); ANTHROPIC_API_KEY for one-click AI (M4)
 docker compose up -d --build    # db (Postgres 17 + pgvector), api (FastAPI + the app), backup (nightly)
 curl -s localhost:8000/api/health
 docker compose exec api python -m app.lexicon.build   # downloads the open data sets and builds the dictionary
@@ -295,7 +295,7 @@ npm ci
 npm run dev                     # http://localhost:5173, /api is proxied to :8000
 npm test                        # unit tests (Vitest)
 npm run e2e                     # gate M1 (Playwright, vite preview)
-npm run e2e:server              # gates M2, M3, M3.5, against an EMPTY compose stack
+npm run e2e:server              # gates M2, M3, M3.5, M4, against an EMPTY compose stack started with LLM_FAKE=true
                                 # (first: docker compose exec api python -m app.lexicon.build --from tests/fixtures/lexicon)
 ```
 
