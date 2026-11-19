@@ -1,0 +1,26 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# node / frontend
+node_modules/
+dist/
+web/test-results/
+web/playwright-report/
+*.tsbuildinfo
+
+# python
+__pycache__/
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# local data: lessons never go into this public repo
+data/
+backups/
+*.dump
+quaderno_export*.json
+quaderno_*.json
+
+.DS_Store
