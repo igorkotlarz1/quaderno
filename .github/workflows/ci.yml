@@ -21,3 +21,49 @@ jobs:
       - run: npm test
       - run: npx playwright install --with-deps chromium
       - run: npm run e2e
+
+  server:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_USER: quaderno
+          POSTGRES_PASSWORD: ci-only-not-a-secret
+          POSTGRES_DB: quaderno
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U quaderno" --health-interval 5s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pytest -q
+        env:
+          TEST_DATABASE_URL: postgresql+psycopg://quaderno:ci-only-not-a-secret@127.0.0.1:5432/quaderno
+
+  gate-m2:
+    runs-on: ubuntu-latest
+    needs: [web, server]
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "POSTGRES_PASSWORD=ci-only-not-a-secret" > .env
+      - run: docker compose up -d --build --wait
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+        working-directory: web
+      - run: npx playwright install --with-deps chromium
+        working-directory: web
+      - run: npm run e2e:server
+        working-directory: web
+      - if: failure()
+        run: docker compose logs --tail 100

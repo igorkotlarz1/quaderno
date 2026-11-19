@@ -1,0 +1,55 @@
+# Quaderno on the Optiplex (M2). Secrets come from .env (copy .env.example), never from this file.
+name: quaderno
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-quaderno}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-quaderno}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: .
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-quaderno}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-quaderno}
+    depends_on:
+      db:
+        condition: service_healthy
+    # Only on localhost: phone and laptop reach it through `tailscale serve` (HTTPS inside your tailnet).
+    ports:
+      - "127.0.0.1:${QUADERNO_PORT:-8000}:8000"
+
+  backup:
+    build:
+      context: .
+      dockerfile: backup/Dockerfile
+    restart: unless-stopped
+    environment:
+      PGHOST: db
+      PGUSER: ${POSTGRES_USER:-quaderno}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB:-quaderno}
+      TZ: ${TZ:-Europe/Warsaw}
+      BACKUP_HOUR: ${BACKUP_HOUR:-3}
+      RESTIC_REPOSITORY: ${RESTIC_REPOSITORY:-}
+      RESTIC_PASSWORD: ${RESTIC_PASSWORD:-}
+      B2_ACCOUNT_ID: ${B2_ACCOUNT_ID:-}
+      B2_ACCOUNT_KEY: ${B2_ACCOUNT_KEY:-}
+    volumes:
+      - ./backups:/backups
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

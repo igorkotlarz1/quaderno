@@ -33,6 +33,8 @@ class Sync {
     // Every local change schedules a push (the store calls this listener after each update).
     store.subscribe(() => {
       if (!this.serverSeen) return;
+      // Show "Synchronizuję…" right away, so "Zapisane" never shows while a change is still waiting.
+      if (this.status === "ok" && dirtyLessons(store.state, this.synced).length) this.set("syncing");
       clearTimeout(this.pushTimer);
       this.pushTimer = setTimeout(() => void this.push(), PUSH_DELAY_MS);
     });
