@@ -1,7 +1,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/header-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="./docs/assets/header-light.svg">
-  <img alt="Quaderno: a personal Italian notebook. Words typed in class, AI fills the gaps, verbs reveal their forms, the CEFR level fills a vial." src="./docs/assets/header-dark.svg" width="100%">
+  <img alt="Quadernotè: a personal Italian notebook. Words typed in class, AI fills the gaps, verbs reveal their forms, the CEFR level fills a vial." src="./docs/assets/header-dark.svg" width="100%">
 </picture>
 
 <p align="center">
@@ -37,7 +37,9 @@
 
 ---
 
-**Quaderno** (Italian for *notebook*) is my personal app for learning Italian. During a one-hour conversation lesson I type Italian → Polish pairs as fast as I can, leave gaps when I don't know the translation, and drop in the verbs we used. After the lesson an LLM fills the gaps, fixes the accents and checks the verb forms the app isn't sure about. Every week it estimates my CEFR level on the way from A1 to B1.
+<img src="./docs/assets/brand/icon.svg" alt="Quadernote app icon: an espresso from above with the Italian flag poured in latte, foam and espresso" width="96" align="right">
+
+**Quadernote** is *quaderno* (Italian for *notebook*) plus *note*, with the accent on the last *è* that every Italian learner keeps forgetting to type. It is my personal app for learning Italian. During a one-hour conversation lesson I type Italian → Polish pairs as fast as I can, leave gaps when I don't know the translation, and drop in the verbs we used. After the lesson an LLM fills the gaps, fixes the accents and checks the verb forms the app isn't sure about. Every week it estimates my CEFR level on the way from A1 to B1.
 
 It is also my testbed for a bigger idea: an AI tutoring platform. Everything here (sync, LLM calls with cost logging, OCR of a paper notebook, pronunciation scoring) is built small, on a real learner (me), before it goes anywhere near other people.
 
@@ -105,7 +107,7 @@ With the server running (M2), open the same address on the phone. Today's lesson
 
 ## 🎯 Use cases
 
-| Who / when | What Quaderno does |
+| Who / when | What Quadernote does |
 |---|---|
 | **In a live lesson**, the teacher is talking fast | Two keys per word (<kbd>Enter</kbd> <kbd>Enter</kbd>), no mouse, no thinking about missing translations |
 | **On the bus after class** | Phone: fill the NULLs, reveal the verb forms you just learned, repeat out loud |
@@ -259,6 +261,16 @@ npm run e2e:server              # gate M2, against an EMPTY compose stack
 ```
 
 The animated SVGs in this README are generated: `python3 scripts/readme_assets.py`.
+
+The brand lives in [docs/assets/brand](docs/assets/brand): the app icon, the favicon-sized icon and the wordmark in light and dark. The wordmark is outlined from Archivo ExtraBold (SIL Open Font License), so it renders the same with or without web fonts; regenerate it with `python3 scripts/brand_assets.py <path to Archivo-ExtraBold.ttf>` (needs `fonttools`).
+
+<p>
+  <img src="./docs/assets/brand/icon.svg" alt="App icon" width="72">&nbsp;&nbsp;
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/brand/wordmark-dark.svg">
+    <img src="./docs/assets/brand/wordmark-light.svg" alt="quadernotè" height="56">
+  </picture>
+</p>
 
 ## 🔐 Repository rules
 

@@ -1,7 +1,7 @@
 [project]
 name = "quaderno-server"
 version = "0.2.0"
-description = "Quaderno API: lessons, verbs and weekly level assessments in Postgres"
+description = "Quadernote API: lessons, verbs and weekly level assessments in Postgres"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",
