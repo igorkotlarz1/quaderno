@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" width="1200" height="120" role="img" aria-label="Grazie mille, a presto!">
+  <defs>
+    <pattern id="quad" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#232523" stroke-width="1"/>
+    </pattern>
+    <clipPath id="frame"><rect width="1200" height="120" rx="18"/></clipPath>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000000" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <g clip-path="url(#frame)">
+    <rect width="1200" height="120" fill="#1a1b1a"/>
+    <rect width="1200" height="120" fill="url(#quad)"/>
+    <path d="M 0 70 Q 50 50, 100 70 Q 150 90, 200 70 Q 250 50, 300 70 Q 350 90, 400 70 Q 450 50, 500 70 Q 550 90, 600 70 Q 650 50, 700 70 Q 750 90, 800 70 Q 850 50, 900 70 Q 950 90, 1000 70 Q 1050 50, 1100 70 Q 1150 90, 1200 70 Q 1250 50, 1300 70" transform="translate(0 -7)" fill="none" stroke="#2fa866" stroke-width="6" stroke-linecap="round"><animateTransform attributeName="transform" type="translate" values="0 -7;-200 -7" dur="6s" repeatCount="indefinite"/></path>
+    <path d="M 0 70 Q 50 50, 100 70 Q 150 90, 200 70 Q 250 50, 300 70 Q 350 90, 400 70 Q 450 50, 500 70 Q 550 90, 600 70 Q 650 50, 700 70 Q 750 90, 800 70 Q 850 50, 900 70 Q 950 90, 1000 70 Q 1050 50, 1100 70 Q 1150 90, 1200 70 Q 1250 50, 1300 70" transform="translate(0 0)" fill="none" stroke="#f4f2ea" stroke-width="6" stroke-linecap="round"><animateTransform attributeName="transform" type="translate" values="0 0;-200 0" dur="6s" repeatCount="indefinite"/></path>
+    <path d="M 0 70 Q 50 50, 100 70 Q 150 90, 200 70 Q 250 50, 300 70 Q 350 90, 400 70 Q 450 50, 500 70 Q 550 90, 600 70 Q 650 50, 700 70 Q 750 90, 800 70 Q 850 50, 900 70 Q 950 90, 1000 70 Q 1050 50, 1100 70 Q 1150 90, 1200 70 Q 1250 50, 1300 70" transform="translate(0 7)" fill="none" stroke="#e0474f" stroke-width="6" stroke-linecap="round"><animateTransform attributeName="transform" type="translate" values="0 7;-200 7" dur="6s" repeatCount="indefinite"/></path>
+    <rect x="380" y="34" width="440" height="56" rx="28" fill="#1a1b1a" stroke="#2f312e" filter="url(#soft)"/>
+    <text x="600" y="69" font-family="'Archivo','Arial Narrow','Helvetica Neue',Arial,sans-serif" font-size="20" font-weight="800" fill="#ecebe6" text-anchor="middle" >Grazie mille · a presto!  ☕</text>
+  </g>
+  <rect x="0.75" y="0.75" width="1198.5" height="118.5" rx="17.5" fill="none" stroke="#2f312e" stroke-width="1.5"/>
+</svg>

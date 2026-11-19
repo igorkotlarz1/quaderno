@@ -1,31 +1,253 @@
-# Quaderno
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/header-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./docs/assets/header-light.svg">
+  <img alt="Quaderno: a personal Italian notebook. Words typed in class, AI fills the gaps, verbs reveal their forms, the CEFR level fills a vial." src="./docs/assets/header-dark.svg" width="100%">
+</picture>
 
-A personal app for learning Italian, built step by step as a testbed for an AI tutoring platform.
-During a lesson you type Italian → Polish pairs fast; after the lesson an LLM fills the gaps, fixes accents,
-conjugates the verbs the app is unsure about and estimates your CEFR level (A1 → B1) every week.
+<p align="center">
+  <a href="https://github.com/igorkotlarz1/quaderno/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/igorkotlarz1/quaderno/ci.yml?branch=main&style=for-the-badge&label=CI&logo=githubactions&logoColor=white" alt="CI"></a>
+  <img src="https://img.shields.io/badge/milestone-M2_of_8-c8321b?style=for-the-badge" alt="Milestone">
+  <img src="https://img.shields.io/badge/obiettivo-A1_→_B1-009246?style=for-the-badge" alt="Goal">
+  <img src="https://img.shields.io/badge/lingua-italiano_🇮🇹-ce2b37?style=for-the-badge" alt="Language">
+</p>
 
-- Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-- Milestones M1–M8: [docs/MILESTONES.md](docs/MILESTONES.md)
-- Changelog: [CHANGELOG.md](CHANGELOG.md)
+<p align="center">
+  <img src="https://img.shields.io/badge/React_19-20232A?style=flat-square&logo=react&logoColor=61DAFB" alt="React">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite">
+  <img src="https://img.shields.io/badge/Vitest-6E9F18?style=flat-square&logo=vitest&logoColor=white" alt="Vitest">
+  <img src="https://img.shields.io/badge/Playwright-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright">
+  <img src="https://img.shields.io/badge/Python_3.12-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/SQLAlchemy_2-D71F00?style=flat-square&logo=sqlalchemy&logoColor=white" alt="SQLAlchemy">
+  <img src="https://img.shields.io/badge/uv-DE5FE9?style=flat-square&logo=uv&logoColor=white" alt="uv">
+  <br>
+  <img src="https://img.shields.io/badge/PostgreSQL_17-4169E1?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/pgvector-336791?style=flat-square&logo=postgresql&logoColor=white" alt="pgvector">
+  <img src="https://img.shields.io/badge/Docker_Compose-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker">
+  <img src="https://img.shields.io/badge/Tailscale-242424?style=flat-square&logo=tailscale&logoColor=white" alt="Tailscale">
+  <img src="https://img.shields.io/badge/restic-1F2328?style=flat-square&logo=restic&logoColor=white" alt="restic">
+  <img src="https://img.shields.io/badge/Backblaze_B2-E21E29?style=flat-square&logo=backblaze&logoColor=white" alt="Backblaze B2">
+  <img src="https://img.shields.io/badge/Ubuntu_24.04-E95420?style=flat-square&logo=ubuntu&logoColor=white" alt="Ubuntu">
+  <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white" alt="GitHub Actions">
+  <img src="https://img.shields.io/badge/Claude_API-D97757?style=flat-square&logo=claude&logoColor=white" alt="Claude API">
+</p>
 
-## How to run
+<p align="center"><i>„Chi va piano va sano e va lontano.”</i> · slow and steady goes far, one lesson at a time.</p>
 
-On the server (the OptiPlex), everything runs in Docker Compose; step by step in Polish: [docs/runbook/m2.md](docs/runbook/m2.md).
+---
 
-```bash
-cp .env.example .env            # set POSTGRES_PASSWORD
-docker compose up -d --build    # db (Postgres 17 + pgvector), api (FastAPI, serves the app), backup (nightly)
-curl -s localhost:8000/api/health
+**Quaderno** (Italian for *notebook*) is my personal app for learning Italian. During a one-hour conversation lesson I type Italian → Polish pairs as fast as I can, leave gaps when I don't know the translation, and drop in the verbs we used. After the lesson an LLM fills the gaps, fixes the accents and checks the verb forms the app isn't sure about. Every week it estimates my CEFR level on the way from A1 to B1.
+
+It is also my testbed for a bigger idea: an AI tutoring platform. Everything here (sync, LLM calls with cost logging, OCR of a paper notebook, pronunciation scoring) is built small, on a real learner (me), before it goes anywhere near other people.
+
+<details>
+<summary><b>Contents</b></summary>
+
+- [Come si usa: how to use it](#-come-si-usa-how-to-use-it)
+- [Use cases](#-use-cases)
+- [Under the hood: architecture](#%EF%B8%8F-under-the-hood-architecture)
+- [Milestones](#-milestones)
+- [Run it yourself](#-run-it-yourself)
+- [Repository rules](#-repository-rules)
+
+</details>
+
+## ✍️ Come si usa: how to use it
+
+The interface is in Polish (that's my native language); the labels below are quoted as they appear, with a translation.
+
+### 1 · During the lesson: just type
+
+Open the app. Today's lesson is already there, dated in Italian at the top (*giovedì 19 novembre*).
+
+| You press | What happens |
+|---|---|
+| type Italian, <kbd>Enter</kbd> | jump to the Polish field |
+| type Polish, <kbd>Enter</kbd> | new row, caret back on Italian |
+| <kbd>Enter</kbd> on an empty Polish field | saved as **NULL** (red *brak tłumaczenia*, "no translation yet"); the AI fills it later |
+| <kbd>↑</kbd> <kbd>↓</kbd> | move between rows |
+| <kbd>Backspace</kbd> on an empty row | delete the row |
+| <kbd>e</kbd> then <kbd>`</kbd> | becomes **è** while you type (works for à è é ì ò ù) |
+| accent bar under the sheet | one tap for à è é ì ò ù È À if your keyboard has none |
+
+Rows are tagged automatically as *słowo* (word) or *zdanie* (phrase/sentence); one click switches it. Nothing to save: every keystroke is stored.
+
+### 2 · Verbs: hidden forms you reveal yourself
+
+Type an infinitive into **Czasowniki** (verbs), e.g. `parlare`. You get a *presente* table for io / tu / lui·lei / noi / voi / loro with the forms **covered**. Say the form out loud, click to check it. What you revealed stays revealed.
+
+The app conjugates regular -are / -ere / -ire verbs (including -isc-, -care/-gare, -iare, reflexive -rsi) and about 40 common irregular ones by itself. Anything it isn't sure about is marked *do sprawdzenia* (to check) and goes to the AI. The rest never costs a token.
+
+### 3 · After the lesson: let the AI tidy up
+
+Open **Uzupełnij z Claude** (fill in with Claude) → copy the prompt → paste Claude's JSON answer into **Eksport i import**. It:
+
+- fills the NULLs,
+- fixes accents (`caffe'` → `caffè`; the old spelling stays visible as a dotted underline),
+- adds part of speech and lemma,
+- conjugates only the verbs marked *do sprawdzenia*.
+
+From M4 this becomes one button that calls the Claude API directly and logs the cost of every call.
+
+### 4 · Every week: where am I?
+
+The vial at the top shows the level **A1 · A1+ · A2 · A2+ · B1** and how far I am to the next one. Once a week the app asks for an assessment (**Ocena tygodnia**). The model gets the last 7 days of words, verbs and my own notes. It answers with a level, a progress score, what I can do already (*Umiesz już*), what to fix (*Do poprawy*) and a plan for next week (*Plan na tydzień*).
+
+### 5 · Phone and laptop, same notebook
+
+With the server running (M2), open the same address on the phone. Today's lesson is there. The footer says **Zapisane na serwerze 16:15** (saved on the server). Fill a NULL on the phone on the bus, and the laptop has it the next time you look.
+
+### Also in the toolbox
+
+- **Wklej stare notatki** (paste old notes): paste lines like `la casa – dom` from an old notebook and they become rows.
+- **Eksport i import**: a JSON export of everything (schema version 1) to back up or move between devices.
+
+## 🎯 Use cases
+
+| Who / when | What Quaderno does |
+|---|---|
+| **In a live lesson**, the teacher is talking fast | Two keys per word (<kbd>Enter</kbd> <kbd>Enter</kbd>), no mouse, no thinking about missing translations |
+| **On the bus after class** | Phone: fill the NULLs, reveal the verb forms you just learned, repeat out loud |
+| **Sunday evening** | Weekly level check: one prompt, one JSON, the vial moves (or doesn't, honestly) |
+| **An old paper notebook** | Paste the old notes now; from M6, take a photo of the page instead |
+| **"Did I already learn *finestra*?"** | One place for every lesson; semantic search ("words about the house") in M8 |
+| **The server is off** | The app keeps working on the device and syncs when the server is back |
+| **Another learner** (my next step) | The same pipeline is the seed of a tutoring platform: lesson capture → LLM cleanup → spaced repetition → progress reports for parents and tutors |
+
+## 🏛️ Under the hood: architecture
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/architecture-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./docs/assets/architecture-light.svg">
+  <img alt="Architecture: laptop and phone reach FastAPI + Postgres 17 on a Dell OptiPlex through Tailscale; nightly pg_dump + restic backups go to Backblaze B2; Claude API comes in M4." src="./docs/assets/architecture-dark.svg" width="100%">
+</picture>
+
+| Layer | Choice | Why |
+|---|---|---|
+| Frontend | React 19 + TypeScript + Vite | logic ported 1:1 from the original single-file app, now testable |
+| State | one store object + `useSyncExternalStore`, saved to `localStorage` (`quaderno.v1`) | typing must never wait for the network |
+| API | FastAPI, Pydantic v2, SQLAlchemy 2, Alembic, run with `uv` | Python is my home turf; small, typed, no magic |
+| Database | PostgreSQL 17 + pgvector, JSONB `extra` columns | relational core, flexible LLM fields, embeddings later without a second DB |
+| Hosting | Dell OptiPlex 7050 Micro at home, Docker Compose, `restart: unless-stopped` | low power, on 24/7, no cloud bill |
+| Network | port bound to `127.0.0.1`, exposed only through `tailscale serve` (HTTPS) | nothing open to the internet, no login screen to build yet |
+| Backups | nightly `pg_dump` (14 kept) + restic → Backblaze B2, scripted trial restore | a backup counts only after a restore has worked |
+| AI (M4+) | Claude: Haiku for cheap fixes, Sonnet for synthesis and weekly levels, Opus vision for notebook photos | every call logged with model, tokens and cost in `llm_calls` |
+
+<details>
+<summary><b>How sync works</b> (last write wins, per lesson)</summary>
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant L as Laptop
+    participant A as API (FastAPI)
+    participant D as Postgres
+    participant P as Phone
+    L->>L: type "il tavolo", Enter, Enter (NULL)
+    Note over L: footer: Synchronizuję…
+    L->>A: PUT /api/lessons/{id} (updated_at = 16:15:03)
+    A->>D: upsert if newer than the stored copy
+    A-->>L: applied ✓ · footer: Zapisane na serwerze
+    P->>A: GET /api/state (on open, on focus, every 30 s)
+    A-->>P: lessons + assessments + deleted ids
+    P->>P: newer updated_at wins · empty "today" gives way to the server's
+    P->>A: PUT lesson with "stół" filled in
+    L->>A: GET /api/state when the tab is back in focus
+    A-->>L: phone's copy is newer, take it
 ```
 
-Development:
+- Deleting a lesson leaves a tombstone, so an old device cannot bring it back.
+- Fields the server has no column for yet are kept in JSONB `extra`, so nothing an LLM adds is lost on a round trip.
+- Without a server (or with `vite preview`) the sync layer stays silent and the app works like the single-file original.
+
+</details>
+
+<details>
+<summary><b>Data model</b></summary>
+
+```text
+lessons      id · date · title · source · created_at · updated_at · deleted_at · summary · notes
+  entries    id · lesson_id · position · it · pl (NULL = to fill) · kind · pl_source · pos · lemma
+             · it_original · it_suggestion · extra (JSONB)
+  verbs      id · lesson_id · position · it · pl · tense · forms (JSONB) · forms_source
+             · confidence ("check" = ask the LLM) · revealed (JSONB) · extra
+assessments  id · week_end · level · progress · assessed_at · data (JSONB, the whole report)
+```
+
+</details>
+
+<details>
+<summary><b>API</b></summary>
+
+| Method | Path | What it does |
+|---|---|---|
+| `GET` | `/api/health` | `{"status": "ok"}` |
+| `GET` | `/api/state` | all lessons, assessments and the ids deleted elsewhere |
+| `PUT` | `/api/lessons/{id}` | upsert a whole lesson; an older copy is refused and the newer one returned |
+| `DELETE` | `/api/lessons/{id}` | tombstone |
+| `PUT` | `/api/assessments/{id}` | save a weekly level report |
+| `GET` | `/` | the built React app (same origin, so one address on every device) |
+
+</details>
+
+<details>
+<summary><b>Repository layout</b></summary>
+
+```text
+web/        React + TS app (src/lib: model, conjugation, level, prompts, store, sync)
+server/     FastAPI app, SQLAlchemy models, Alembic migrations, pytest
+scripts/    backup.sh · backup-loop.sh · restore-test.sh · restore.sh · readme_assets.py
+backup/     image with pg_dump 17 + restic
+legacy/     the original single-file app, used by the M1 gate test
+docs/       ARCHITECTURE · MILESTONES · runbook/ (Polish, step by step) · log/ (what broke, per milestone)
+compose.yaml · Dockerfile · .env.example
+```
+
+</details>
+
+## 🪨 Milestones
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/milestones-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./docs/assets/milestones-light.svg">
+  <img alt="Milestones M1 to M8 as pebbles on a path: M1 done, M2 in review, M3 to M8 planned." src="./docs/assets/milestones-dark.svg" width="100%">
+</picture>
+
+Each milestone has a **gate**: one sentence that must be true on a real lesson, checked by an automated test (`test_gate_mN`) and by hand from a Polish runbook.
+
+| | Milestone | Done when | Status |
+|---|---|---|---|
+| M1 | React + Vite + TS port | importing the old JSON export shows the same view as the original app | ✅ done |
+| M2 | FastAPI + Postgres on the OptiPlex, Tailscale, backups | phone and laptop see the same lesson; a trial restore works | 🔴 in review |
+| M3 | Offline-first PWA (IndexedDB + service worker) | a lesson typed in airplane mode syncs when the network is back | ⚪ |
+| M4 | "Opracuj lekcję" through the Claude API | one click instead of the manual prompt; cost of every call logged | ⚪ |
+| M5 | Spaced repetition (FSRS) | the app picks what to review every day | ⚪ |
+| M6 | Notebook OCR (vision) + review screen | photo of a page → checked words in the lesson | ⚪ |
+| M7 | Voice: speech-to-text + pronunciation score | the app scores the pronunciation of a single word | ⚪ |
+| M8 | Embeddings, semantic search, second user | search by meaning; a second user has separate data | ⚪ |
+
+Details and out-of-scope list: [docs/MILESTONES.md](docs/MILESTONES.md) · what broke and why: [docs/log](docs/log) · changelog: [CHANGELOG.md](CHANGELOG.md).
+
+## 🚀 Run it yourself
+
+**On a home server** (step by step, in Polish: [docs/runbook/m2.md](docs/runbook/m2.md)):
+
+```bash
+cp .env.example .env            # set POSTGRES_PASSWORD (e.g. openssl rand -hex 24)
+docker compose up -d --build    # db (Postgres 17 + pgvector), api (FastAPI + the app), backup (nightly)
+curl -s localhost:8000/api/health
+sudo tailscale serve --bg 8000  # HTTPS address inside your tailnet
+```
+
+**Development:**
 
 ```bash
 # API (Python 3.12, uv)
 cd server
 uv sync
 uv run pytest                   # SQLite by default; TEST_DATABASE_URL=postgresql+psycopg://... for Postgres
-uv run uvicorn app.main:app --reload    # http://127.0.0.1:8000, needs DATABASE_URL or uses a local SQLite file
+uv run uvicorn app.main:app --reload    # http://127.0.0.1:8000
 
 # Web app (Node 22)
 cd web
@@ -36,11 +258,21 @@ npm run e2e                     # gate M1 (Playwright, vite preview)
 npm run e2e:server              # gate M2, against an EMPTY compose stack
 ```
 
-Without a server the web app works on localStorage alone, as in M1.
-`legacy/quaderno.html` is the original single-file app (no data inside); gate M1 compares the new app with it.
-Step-by-step checks for each milestone, in Polish: [docs/runbook](docs/runbook). Milestone logs: [docs/log](docs/log).
+The animated SVGs in this README are generated: `python3 scripts/readme_assets.py`.
 
-## Repository rules
+## 🔐 Repository rules
 
-This repo is public. Secrets live only in `.env` (ignored); `.env.example` lists the keys with empty values.
-Real lesson data never goes into the repo; tests use made-up fixtures.
+This repo is public on purpose (portfolio), so:
+
+- secrets live only in `.env` (git-ignored); `.env.example` lists the keys with empty values,
+- every diff is scanned for keys before a commit,
+- real lesson data never enters the repo; tests use made-up words (*la finestra – okno*),
+- the server port is never published beyond `127.0.0.1`.
+
+Built milestone by milestone with [Claude Code](https://claude.com/claude-code) as a pair programmer.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/footer-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./docs/assets/footer-light.svg">
+  <img alt="Grazie mille, a presto!" src="./docs/assets/footer-dark.svg" width="100%">
+</picture>
