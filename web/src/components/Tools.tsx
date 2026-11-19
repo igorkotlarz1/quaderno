@@ -87,7 +87,7 @@ export const Tools = forwardRef<HTMLDetailsElement, { onLevelImported: () => voi
       <details className="tool" id="t-export" onToggle={refreshExport}>
         <summary><b>Eksport i import</b><small>Kopia JSON po każdej lekcji</small></summary>
         <div className="body">
-          <p>Dane są w pamięci tej przeglądarki (localStorage). Po każdej lekcji skopiuj albo pobierz eksport. Import przyjmuje cały eksport albo pojedynczą lekcję; lekcja o tym samym <code>id</code> zostaje podmieniona.</p>
+          <p>Dane są w pamięci tej przeglądarki (IndexedDB) i, gdy działa serwer, także na serwerze. Po każdej lekcji skopiuj albo pobierz eksport. Import przyjmuje cały eksport albo pojedynczą lekcję; lekcja o tym samym <code>id</code> zostaje podmieniona.</p>
           <div className="btns">
             <button className="primary" id="exp-copy" type="button" onClick={() => copyText(refreshExport(), toast, expOut.current)}>Kopiuj JSON</button>
             {!framed && <button id="exp-dl" type="button" onClick={() => {

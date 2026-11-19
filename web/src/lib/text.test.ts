@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clean, fixBacktick, kindOf, plw } from "./text";
+import { clean, fixBacktick, kindOf, plw, waiting } from "./text";
 
 describe("text helpers", () => {
   it("clean collapses spaces and turns empty into null", () => {
@@ -21,5 +21,13 @@ describe("text helpers", () => {
     expect(plw(3, "słowo", "słowa", "słów")).toBe("3 słowa");
     expect(plw(12, "słowo", "słowa", "słów")).toBe("12 słów");
     expect(plw(22, "słowo", "słowa", "słów")).toBe("22 słowa");
+  });
+});
+
+describe("waiting (Polish plural)", () => {
+  it("picks the right form", () => {
+    expect([1, 2, 4, 5, 12, 22, 25].map(waiting)).toEqual([
+      "1 lekcja czeka", "2 lekcje czekają", "4 lekcje czekają", "5 lekcji czeka", "12 lekcji czeka", "22 lekcje czekają", "25 lekcji czeka",
+    ]);
   });
 });
