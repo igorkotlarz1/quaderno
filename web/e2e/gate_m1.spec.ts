@@ -13,10 +13,13 @@ const legacyUrl = new URL("../../legacy/quaderno.html", import.meta.url).href;
 async function openWithFixture(page: Page, url: string) {
   await page.clock.setFixedTime(new Date("2026-11-20T10:00:00"));
   await page.goto(url);
+  // both apps put the caret in the first Italian field ~50 ms after load; wait for it so it can't
+  // land in the middle of filling the import field
+  await expect(page.locator("#rows input.it").first()).toBeFocused();
   await page.locator("#t-export summary").click();
   await page.locator("#imp-in").fill(fixture);
   await page.locator("#imp-go").click();
-  await page.waitForTimeout(300);
+  await expect(page.locator("#toast")).toContainText("Import: 2 nowych");
 }
 
 /** Everything visible that M1 must keep the same. */

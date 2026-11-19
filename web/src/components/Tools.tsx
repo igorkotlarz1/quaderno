@@ -14,8 +14,8 @@ export const Tools = forwardRef<HTMLDetailsElement, { onLevelImported: () => voi
   const weekOut = useRef<HTMLTextAreaElement>(null);
   const expOut = useRef<HTMLTextAreaElement>(null);
   const [notes, setNotes] = useState("");
-  const [paste, setPaste] = useState("");
-  const [imp, setImp] = useState("");
+  const pasteIn = useRef<HTMLTextAreaElement>(null);
+  const impIn = useRef<HTMLTextAreaElement>(null);
   const [expText, setExpText] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -68,17 +68,17 @@ export const Tools = forwardRef<HTMLDetailsElement, { onLevelImported: () => voi
         <summary><b>Wklej stare notatki</b><small>Tekst z zeszytu, po linii na słowo</small></summary>
         <div className="body">
           <p>Jedna pozycja na linię. Separator: <code>-</code>, <code>–</code>, <code>=</code>, <code>|</code>, <code>:</code> albo tabulator. Linia bez separatora trafia jako włoski z polskim NULL. Dodaje do bieżącej lekcji.</p>
-          <textarea id="paste-in" aria-label="Notatki do wklejenia" value={paste} onChange={(ev) => setPaste(ev.currentTarget.value)}
+          <textarea id="paste-in" aria-label="Notatki do wklejenia" ref={pasteIn}
             placeholder={"la casa - dom\nvecchio – stary\nNon sono stanco.  = Nie jestem zmęczony.\ndolce"} />
           <div className="btns"><button className="primary" id="paste-go" type="button" onClick={() => {
-            const rows = parseNotes(paste);
+            const rows = parseNotes(pasteIn.current!.value);
             if (!rows.length) { toast("Najpierw wklej notatki"); return; }
             s.update(() => {
               const list = s.cur.entries, last = list[list.length - 1];
               if (last && !last.it && !last.pl) list.pop();
               list.push(...rows, newEntry());
             }, { reset: true });
-            setPaste("");
+            pasteIn.current!.value = "";
             toast(`Dodano ${plw(rows.length, "pozycję", "pozycje", "pozycji")}`);
           }}>Dodaj do lekcji</button></div>
         </div>
@@ -103,8 +103,9 @@ export const Tools = forwardRef<HTMLDetailsElement, { onLevelImported: () => voi
             }} />
           </div>
           <textarea id="exp-out" ref={expOut} readOnly aria-label="Eksport JSON" value={expText} />
-          <textarea id="imp-in" aria-label="JSON do importu" placeholder="Wklej tu JSON (eksport albo odpowiedź Claude)" value={imp} onChange={(ev) => setImp(ev.currentTarget.value)} />
-          <div className="btns"><button className="primary" id="imp-go" type="button" onClick={() => { doImport(imp); setImp(""); }}>Importuj wklejony JSON</button></div>
+          {/* uncontrolled on purpose: the click reads the field directly, so paste + immediate click never sees a stale value */}
+          <textarea id="imp-in" ref={impIn} aria-label="JSON do importu" placeholder="Wklej tu JSON (eksport albo odpowiedź Claude)" />
+          <div className="btns"><button className="primary" id="imp-go" type="button" onClick={() => { const el = impIn.current!; doImport(el.value); el.value = ""; }}>Importuj wklejony JSON</button></div>
         </div>
       </details>
     </section>

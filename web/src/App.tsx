@@ -17,7 +17,8 @@ export function App() {
   useEffect(() => {
     const list = store.cur.entries;
     const target = list.find((e) => !e.it) || list[list.length - 1];
-    setTimeout(() => document.getElementById("it-" + target.id)?.focus(), 50);
+    // ...but never steal focus from a field the user (or a test) already clicked into.
+    setTimeout(() => { if (document.activeElement === document.body) document.getElementById("it-" + target.id)?.focus(); }, 50);
   }, []);
 
   return (
