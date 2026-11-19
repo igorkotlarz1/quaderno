@@ -8,6 +8,19 @@ conjugates the verbs the app is unsure about and estimates your CEFR level (A1 â
 - Milestones M1â€“M8: [docs/MILESTONES.md](docs/MILESTONES.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 
+## How to run
+
+```bash
+cd web
+npm ci
+npm run dev        # http://localhost:5173
+npm test           # unit tests (Vitest)
+npm run e2e        # gate test (Playwright)
+```
+
+`legacy/quaderno.html` is the original single-file app (no data inside); the gate test compares the new app with it.
+Step-by-step checks for each milestone, in Polish: [docs/runbook](docs/runbook).
+
 ## Repository rules
 
 This repo is public. Secrets live only in `.env` (ignored); `.env.example` lists the keys with empty values.

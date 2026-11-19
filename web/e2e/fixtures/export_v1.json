@@ -1,0 +1,58 @@
+{
+  "app": "quaderno",
+  "schema_version": 1,
+  "exported_at": "2026-11-19T18:00:00.000Z",
+  "lessons": [
+    {
+      "id": "fixture-lesson-1",
+      "date": "2026-11-12",
+      "title": "Rodzajniki i przeczenie",
+      "source": "live",
+      "created_at": "2026-11-12T17:00:00.000Z",
+      "updated_at": "2026-11-12T18:00:00.000Z",
+      "entries": [
+        { "id": "f-e1", "it": "la casa", "pl": "dom", "kind": "word", "pl_source": "user", "created_at": "2026-11-12T17:01:00.000Z", "pos": "noun", "lemma": "la casa" },
+        { "id": "f-e2", "it": "il gatto", "pl": null, "kind": "word", "pl_source": null, "created_at": "2026-11-12T17:02:00.000Z" },
+        { "id": "f-e3", "it": "Non sono stanco.", "pl": "Nie jestem zmęczony.", "kind": "phrase", "pl_source": "user", "created_at": "2026-11-12T17:03:00.000Z" },
+        { "id": "f-e4", "it": "caffè", "pl": "kawa", "kind": "word", "pl_source": "llm", "created_at": "2026-11-12T17:04:00.000Z", "it_original": "caffe'" }
+      ],
+      "verbs": [
+        { "id": "f-v1", "it": "bere", "pl": "pić", "tense": "presente",
+          "forms": { "io": "bevo", "tu": "bevi", "lui": "beve", "noi": "beviamo", "voi": "bevete", "loro": "bevono" },
+          "forms_source": "auto", "confidence": "high",
+          "revealed": { "io": true, "tu": true, "lui": false, "noi": false, "voi": false, "loro": false },
+          "created_at": "2026-11-12T17:10:00.000Z" },
+        { "id": "f-v2", "it": "tossire", "pl": null, "tense": "presente",
+          "forms": { "io": "tosso", "tu": "tossi", "lui": "tosse", "noi": "tossiamo", "voi": "tossite", "loro": "tossono" },
+          "forms_source": "auto", "confidence": "check",
+          "revealed": { "io": false, "tu": false, "lui": false, "noi": false, "voi": false, "loro": false },
+          "created_at": "2026-11-12T17:11:00.000Z" }
+      ]
+    },
+    {
+      "id": "fixture-lesson-2",
+      "date": "2026-11-19",
+      "title": "Przymiotniki",
+      "source": "live",
+      "created_at": "2026-11-19T17:00:00.000Z",
+      "updated_at": "2026-11-19T18:00:00.000Z",
+      "entries": [
+        { "id": "f-e5", "it": "vecchio", "pl": "stary", "kind": "word", "pl_source": "user", "created_at": "2026-11-19T17:01:00.000Z" },
+        { "id": "f-e6", "it": "dolce", "pl": null, "kind": "word", "pl_source": null, "created_at": "2026-11-19T17:02:00.000Z" }
+      ],
+      "verbs": [
+        { "id": "f-v3", "it": "capire", "pl": "rozumieć", "tense": "presente",
+          "forms": { "io": "capisco", "tu": "capisci", "lui": "capisce", "noi": "capiamo", "voi": "capite", "loro": "capiscono" },
+          "forms_source": "llm", "confidence": "high",
+          "revealed": { "io": true, "tu": true, "lui": true, "noi": true, "voi": true, "loro": true },
+          "created_at": "2026-11-19T17:10:00.000Z" }
+      ]
+    }
+  ],
+  "assessments": [
+    { "id": "f-a1", "type": "level_assessment", "week_start": "2026-11-12", "week_end": "2026-11-19", "assessed_at": "2026-11-19T19:00:00.000Z",
+      "level": "A1", "progress": 45, "confidence": "medium", "summary_pl": "Solidny start: rodzajniki i przeczenie z non.",
+      "strengths": [], "gaps": ["liczba mnoga", "pytania"], "next_week": ["10 zdań z non"], "can_do": ["przedstawić się", "zaprzeczyć z non"],
+      "evidence": null, "model": null }
+  ]
+}
