@@ -44,7 +44,7 @@ It is also my testbed for a bigger idea: an AI tutoring platform. Everything her
 <details>
 <summary><b>Contents</b></summary>
 
-- [Come si usa: how to use it](#-come-si-usa-how-to-use-it)
+- [Come si usa: how to use it](#%EF%B8%8F-come-si-usa-how-to-use-it)
 - [Use cases](#-use-cases)
 - [Under the hood: architecture](#%EF%B8%8F-under-the-hood-architecture)
 - [Milestones](#-milestones)
