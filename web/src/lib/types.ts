@@ -13,7 +13,7 @@ export interface Entry {
   pl: string | null; // null = no translation yet (the LLM fills it after the lesson)
   kind: Kind;
   kind_locked?: boolean; // true when the user picked word/phrase by hand
-  pl_source: "user" | "llm" | null;
+  pl_source: "user" | "llm" | "dict" | null; // "dict" = picked from the offline dictionary (M3.5)
   created_at: string;
   pos?: string;
   lemma?: string;

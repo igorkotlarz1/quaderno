@@ -79,3 +79,37 @@ class Assessment(Base):
     assessed_at: Mapped[str | None] = mapped_column(String(40))
     data: Mapped[dict] = mapped_column(JsonType)  # the whole assessment object as the frontend has it
     updated_at: Mapped[datetime | None] = mapped_column()
+
+
+# ---- M3.5: dictionary built from open data (app/lexicon). Rebuilt as a whole by the import script.
+
+
+class LexLemma(Base):
+    __tablename__ = "lex_lemmas"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    lemma: Mapped[str] = mapped_column(Text, index=True)
+    pos: Mapped[str] = mapped_column(String(16))  # noun, verb, adj, ... as in Wiktionary (wiktextract)
+    rank: Mapped[int] = mapped_column(Integer, index=True)  # 1 = most frequent in spoken Italian (subtitles)
+    freq: Mapped[int] = mapped_column(Integer)  # estimated occurrences of all its forms in the corpus
+    # Polish glosses in Wiktionary order: [{"gloss": "...", "note": "...", "tags": [...]}]
+    senses: Mapped[list] = mapped_column(JsonType)
+    tags: Mapped[list] = mapped_column(JsonType, default=list)  # e.g. ["feminine"]
+
+
+class LexForm(Base):
+    __tablename__ = "lex_forms"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    form: Mapped[str] = mapped_column(Text, index=True)  # lower case, as written (finestre, è)
+    # without accents (e, perche), for typing without an Italian keyboard
+    key: Mapped[str] = mapped_column(Text, index=True)
+    lemma_id: Mapped[int] = mapped_column(ForeignKey("lex_lemmas.id", ondelete="CASCADE"), index=True)
+    freq: Mapped[int] = mapped_column(Integer, default=0)  # occurrences of this exact form in the corpus
+
+
+class LexMeta(Base):
+    __tablename__ = "lex_meta"
+
+    key: Mapped[str] = mapped_column(String(32), primary_key=True)
+    value: Mapped[dict] = mapped_column(JsonType)

@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, type KeyboardEvent, type MouseEvent } from "react";
+import { useLexicon } from "../lib/lexicon";
 import { newEntry } from "../lib/model";
 import { useStore } from "../lib/store";
 import { clean, fixBacktick, kindOf } from "../lib/text";
@@ -27,6 +28,7 @@ export function Sheet() {
   const s = useStore();
   const toast = useToast();
   const l = s.cur;
+  const lex = useLexicon();
   const focus = useRef<{ id: string; col: Col } | null>(null);
   const fresh = useRef<string | null>(null);
 
@@ -64,6 +66,13 @@ export function Sheet() {
       if (col === "it") { e.it = clean(el.value); if (!e.kind_locked) e.kind = kindOf(e.it); }
       else { e.pl = clean(el.value); e.pl_source = e.pl ? "user" : null; }
     });
+  }
+
+  /** A chip under the row was picked: the meaning goes into "polski", marked as coming from the dictionary. */
+  function pick(e: Entry, gloss: string) {
+    const el = document.getElementById(`pl-${e.id}`) as HTMLInputElement | null;
+    if (el) el.value = gloss;
+    s.update(() => { e.pl = gloss; e.pl_source = "dict"; });
   }
 
   function onKey(ev: KeyboardEvent<HTMLInputElement>, e: Entry, col: Col) {
@@ -119,7 +128,8 @@ export function Sheet() {
               placeholder="po włosku" aria-label={`Włoski, wiersz ${i + 1}`} defaultValue={e.it ?? ""}
               title={e.it_original ? `Claude poprawił z: ${e.it_original}` : undefined}
               onChange={(ev) => onInput(e, "it", ev.currentTarget)} onKeyDown={(ev) => onKey(ev, e, "it")} />
-            <input className={"pl" + (e.it && !e.pl ? " isnull" : "")} id={`pl-${e.id}`} lang="pl" autoComplete="off" spellCheck={false}
+            <input className={"pl" + (e.it && !e.pl ? " isnull" : "") + (e.pl_source === "dict" ? " fromdict" : "")}
+              title={e.pl_source === "dict" ? "Ze słownika (możesz zmienić)" : undefined} id={`pl-${e.id}`} lang="pl" autoComplete="off" spellCheck={false}
               placeholder="brak tłumaczenia" aria-label={`Polski, wiersz ${i + 1}`} defaultValue={e.pl ?? ""}
               onChange={(ev) => onInput(e, "pl", ev.currentTarget)} onKeyDown={(ev) => onKey(ev, e, "pl")} />
             <button className="kind" type="button" data-k={e.kind} title="Słowo czy zdanie? Kliknij, żeby zmienić"
@@ -127,6 +137,7 @@ export function Sheet() {
               {e.kind === "phrase" ? "zdanie" : "słowo"}
             </button>
             <button className="del" type="button" aria-label={`Usuń wiersz ${i + 1}`} onClick={() => removeRow(e.id)}>✕</button>
+            {e.it && !e.pl && lex && <Chips glosses={lex.suggest(e.it)} onPick={(g) => pick(e, g)} />}
           </div>
         ))}
       </div>
@@ -146,3 +157,15 @@ export function Sheet() {
   );
 }
 
+
+/** Up to three meanings from the dictionary under a row without a translation. Nothing is filled in until one is clicked. */
+function Chips({ glosses, onPick }: { glosses: string[]; onPick: (g: string) => void }) {
+  if (!glosses.length) return null;
+  return (
+    <div className="chips" aria-label="Podpowiedzi ze słownika">
+      <span>słownik:</span>
+      {/* mousedown preventDefault keeps the keyboard open on a phone */}
+      {glosses.map((g) => <button type="button" key={g} onMouseDown={(ev) => ev.preventDefault()} onClick={() => onPick(g)}>{g}</button>)}
+    </div>
+  );
+}

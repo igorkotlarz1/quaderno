@@ -63,7 +63,9 @@ jobs:
         working-directory: web
       - run: npx playwright install --with-deps chromium
         working-directory: web
-      - run: npm run e2e:server   # gates M2 + M3
+      # Gate M3.5 uses the tiny test dictionary from the repo (the real data is downloaded only on the server).
+      - run: docker compose exec -T api python -m app.lexicon.build --from tests/fixtures/lexicon
+      - run: npm run e2e:server   # gates M2, M3, M3.5
         working-directory: web
       - if: failure()
         run: docker compose logs --tail 100

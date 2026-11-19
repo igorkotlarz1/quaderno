@@ -1,4 +1,5 @@
 import { forwardRef, useRef, useState } from "react";
+import { useLexicon } from "../lib/lexicon";
 import { weekPayload, weekWindow } from "../lib/level";
 import { exportAll, filled, importJson, newEntry, parseNotes, verbsOf } from "../lib/model";
 import { lessonPrompt, weekPrompt } from "../lib/prompts";
@@ -18,6 +19,18 @@ export const Tools = forwardRef<HTMLDetailsElement, { onLevelImported: () => voi
   const impIn = useRef<HTMLTextAreaElement>(null);
   const [expText, setExpText] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
+  const lex = useLexicon();
+  const nulls = s.cur.entries.filter((e) => e.it && !e.pl);
+  const known = lex ? nulls.filter((e) => lex.suggest(e.it, 1).length) : [];
+
+  /** Fill every row without a translation that the dictionary knows with its first (most common) meaning. */
+  function fillFromDictionary() {
+    if (!lex) return;
+    if (!known.length) { toast(nulls.length ? "Słownik nie zna żadnego z brakujących słów" : "Wszystko ma już tłumaczenie"); return; }
+    s.update(() => { for (const e of known) { e.pl = lex.suggest(e.it, 1)[0]; e.pl_source = "dict"; } }, { reset: true });
+    const left = nulls.length - known.length;
+    toast(`Uzupełniono ${plw(known.length, "pozycję", "pozycje", "pozycji")}` + (left ? `, dla Claude zostaje ${left}` : ""));
+  }
 
   const { start, end } = weekWindow(s.state);
   const weekLessons = s.state.lessons.filter((l) => (l.date || "") >= start && (l.date || "") <= end && (filled(l).length || verbsOf(l).length)).length;
@@ -39,10 +52,35 @@ export const Tools = forwardRef<HTMLDetailsElement, { onLevelImported: () => voi
 
   return (
     <section className="tools" aria-label="Narzędzia">
+      <details className="tool" id="t-dict">
+        <summary><b>Słownik offline</b><small>{lex ? `${lex.size} najczęstszych słów, działa bez sieci` : "Pobierze się z serwera przy następnym połączeniu"}</small></summary>
+        <div className="body">
+          <p>Pod wierszem bez tłumaczenia pojawiają się do trzech znaczeń ze słownika: kliknij właściwe. Przycisk niżej wpisuje od razu pierwsze (najczęstsze) znaczenie we wszystkich brakujących; sprawdź je, bo słowo może mieć kilka sensów. Wpisy ze słownika mają znacznik <code>pl_source: "dict"</code> i kropkowane podkreślenie.</p>
+          <div className="btns">
+            <button className="primary" id="dict-fill" type="button" disabled={!lex} onClick={fillFromDictionary}>Uzupełnij ze słownika</button>
+            <span className="keys" id="dict-info">{lex ? `bez tłumaczenia: ${nulls.length} · słownik zna: ${known.length}` : "słownik niepobrany"}</span>
+          </div>
+          {lex && (
+            <>
+              <p><b>Źródła słownika.</b> Słownik powstał automatycznie z otwartych zbiorów danych. Dziękujemy ich autorom:</p>
+              <ul className="lexsrc" id="dict-sources">
+                {lex.bundle.sources.map((src) => (
+                  <li key={src.id}>
+                    <a href={src.homepage} target="_blank" rel="noreferrer">{src.name}</a>, {src.authors}.{" "}
+                    Licencja <a href={src.license_url} target="_blank" rel="noreferrer">{src.license}</a>.
+                  </li>
+                ))}
+              </ul>
+              <p className="keys">Wersja {lex.bundle.version}, zbudowana {fmtDay(lex.bundle.built_at.slice(0, 10))}. Słownik jest uproszczony i może się mylić. Metoda: README, sekcja „Słownik”.</p>
+            </>
+          )}
+        </div>
+      </details>
+
       <details className="tool" id="t-llm">
         <summary><b>Uzupełnij z Claude</b><small>Prompt z tą lekcją, po zajęciach</small></summary>
         <div className="body">
-          <p>Kopiuje gotowy prompt z tą lekcją w JSON. Wklej go do Claude, a odpowiedź (sam JSON) wklej w „Eksport i import”. Pozycje uzupełnione przez model dostaną znacznik <code>pl_source: "llm"</code>.</p>
+          <p>Kopiuje gotowy prompt z tą lekcją w JSON. Wklej go do Claude, a odpowiedź (sam JSON) wklej w „Eksport i import”. Pozycje uzupełnione przez model dostaną znacznik <code>pl_source: "llm"</code>. Najpierw użyj „Słownika offline”: do Claude trafi tylko to, czego słownik nie zna.</p>
           <div className="btns"><button className="primary" id="copy-prompt" type="button" onClick={() => copyText(lessonPrompt(s.cur), toast, promptOut.current)}>Kopiuj prompt</button></div>
           <textarea id="prompt-out" ref={promptOut} readOnly aria-label="Prompt dla LLM" hidden />
         </div>
