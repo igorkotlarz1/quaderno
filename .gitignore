@@ -24,3 +24,8 @@ quaderno_export*.json
 quaderno_*.json
 
 .DS_Store
+server/.venv/
+server/*.db
+__pycache__/
+.pytest_cache/
+.ruff_cache/
