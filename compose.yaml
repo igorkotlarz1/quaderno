@@ -22,6 +22,10 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-quaderno}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-quaderno}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}  # M4; empty = manual prompts only
+      LLM_LESSON_MODEL: ${LLM_LESSON_MODEL:-claude-haiku-5-5}
+      LLM_WEEK_MODEL: ${LLM_WEEK_MODEL:-claude-sonnet-5-5}
+      LLM_FAKE: ${LLM_FAKE:-false}  # CI only: a stand-in for the Claude API
     depends_on:
       db:
         condition: service_healthy

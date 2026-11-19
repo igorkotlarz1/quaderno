@@ -10,6 +10,7 @@ dependencies = [
     "psycopg[binary]>=3.2",
     "alembic>=1.14",
     "pydantic-settings>=2.6",
+    "anthropic>=2.11.0",
 ]
 
 [dependency-groups]
@@ -21,6 +22,9 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+"app/llm/prompts.py" = ["E501"]  # prompt prose, kept as the model reads it
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

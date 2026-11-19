@@ -3,7 +3,7 @@ fields we don't have a column for yet land in `extra`, so nothing the LLM adds i
 
 from datetime import datetime
 
-from sqlalchemy import ForeignKey, Integer, String, Text
+from sqlalchemy import Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .db import Base, JsonType
@@ -113,3 +113,27 @@ class LexMeta(Base):
 
     key: Mapped[str] = mapped_column(String(32), primary_key=True)
     value: Mapped[dict] = mapped_column(JsonType)
+
+
+# ---- M4: every Claude API call, with its tokens and estimated cost (app/llm).
+
+
+class LlmCall(Base):
+    __tablename__ = "llm_calls"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    created_at: Mapped[str] = mapped_column(String(40), index=True)  # ISO time, UTC
+    purpose: Mapped[str] = mapped_column(String(16))  # "lesson" or "week"
+    model: Mapped[str] = mapped_column(String(48))  # the model that answered (may be a fallback)
+    lesson_id: Mapped[str | None] = mapped_column(String(64))
+    status: Mapped[str] = mapped_column(String(16))  # ok / error / refusal
+    input_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    output_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    cache_read_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    cache_write_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    cost_usd: Mapped[float] = mapped_column(
+        Float, default=0.0
+    )  # estimate from the price list in app/llm/cost.py
+    duration_ms: Mapped[int] = mapped_column(Integer, default=0)
+    request_id: Mapped[str | None] = mapped_column(String(64))  # Anthropic's request id, for support
+    error: Mapped[str | None] = mapped_column(Text)
