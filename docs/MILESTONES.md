@@ -5,7 +5,7 @@ Status: `todo` · `in progress` · `done (date, PR)`.
 
 | M | Goal | Done when | Status |
 |---|------|-----------|--------|
-| M1 | Quaderno in React + Vite + TS, logic 1:1 with the Artifact (entry, NULLs, verbs with reveal, accents, level bar, prompts) | importing the current JSON export (schema_version 1) shows the same view as the Artifact; conjugation and import tests are green | in progress |
+| M1 | Quaderno in React + Vite + TS, logic 1:1 with the Artifact (entry, NULLs, verbs with reveal, accents, level bar, prompts) | importing the current JSON export (schema_version 1) shows the same view as the Artifact; conjugation and import tests are green | done (2026-11-19, #1) |
 | M2 | FastAPI + Postgres 17 (pgvector) in Docker Compose on the OptiPlex, Tailscale, pg_dump + restic → B2 | phone and laptop see the same lesson; a test restore of the backup works | todo |
 | M3 | Offline-first PWA: IndexedDB (Dexie) + sync with the API | a lesson typed in airplane mode is saved and syncs when the network is back | todo |
 | M4 | "Opracuj lekcję" via Claude API: accents, NULLs, pos/lemma, only verbs marked "do sprawdzenia"; weekly level via API; `llm_calls` table | one click instead of the manual prompt; cost of every call in the log | todo |
