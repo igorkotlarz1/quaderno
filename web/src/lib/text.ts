@@ -54,3 +54,10 @@ export const fmtDay = (d: string): string => {
     return d;
   }
 };
+
+/** Polish plural: 1 lekcja czeka, 2–4 lekcje czekają, 5+ lekcji czeka (12–14 too). */
+export function waiting(n: number): string {
+  if (n === 1) return "1 lekcja czeka";
+  const few = n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14);
+  return few ? `${n} lekcje czekają` : `${n} lekcji czeka`;
+}

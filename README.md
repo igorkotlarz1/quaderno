@@ -73,7 +73,7 @@ Open the app. Today's lesson is already there, dated in Italian at the top (*gio
 | <kbd>e</kbd> then <kbd>`</kbd> | becomes **è** while you type (works for à è é ì ò ù) |
 | accent bar under the sheet | one tap for à è é ì ò ù È À if your keyboard has none |
 
-Rows are tagged automatically as *słowo* (word) or *zdanie* (phrase/sentence); one click switches it. Nothing to save: every keystroke is stored.
+Rows are tagged automatically as *słowo* (word) or *zdanie* (phrase/sentence); one click switches it. Nothing to save: every keystroke is stored on the device, also without a network. Install it from the browser menu (*Zainstaluj aplikację* / *Do ekranu początkowego*) and it opens like an app, in airplane mode too.
 
 ### 2 · Verbs: hidden forms you reveal yourself
 
@@ -128,7 +128,8 @@ With the server running (M2), open the same address on the phone. Today's lesson
 | Layer | Choice | Why |
 |---|---|---|
 | Frontend | React 19 + TypeScript + Vite | logic ported 1:1 from the original single-file app, now testable |
-| State | one store object + `useSyncExternalStore`, saved to `localStorage` (`quaderno.v1`) | typing must never wait for the network |
+| State | one store object + `useSyncExternalStore`, saved to IndexedDB through Dexie, with a synchronous emergency copy when the page closes | typing must never wait for the network, and closing the app right after a word must not lose it |
+| Offline | service worker (Workbox via `vite-plugin-pwa`) precaches the app; installable manifest | the app opens in airplane mode; edits wait in IndexedDB and go out when the network is back |
 | API | FastAPI, Pydantic v2, SQLAlchemy 2, Alembic, run with `uv` | Python is my home turf; small, typed, no magic |
 | Database | PostgreSQL 17 + pgvector, JSONB `extra` columns | relational core, flexible LLM fields, embeddings later without a second DB |
 | Hosting | Dell OptiPlex 7050 Micro at home, Docker Compose, `restart: unless-stopped` | low power, on 24/7, no cloud bill |
@@ -222,12 +223,12 @@ Each milestone has a **gate**: one sentence that must be true on a real lesson, 
 |---|---|---|---|
 | M1 | React + Vite + TS port | importing the old JSON export shows the same view as the original app | ✅ done |
 | M2 | FastAPI + Postgres on the OptiPlex, Tailscale, backups | phone and laptop see the same lesson; a trial restore works | ✅ done |
-| M3 | Offline-first PWA (IndexedDB + service worker) | a lesson typed in airplane mode syncs when the network is back | ⚪ |
+| M3 | Offline-first PWA (IndexedDB + service worker) | a lesson typed in airplane mode syncs when the network is back | 🟡 in review |
 | M4 | "Opracuj lekcję" through the Claude API | one click instead of the manual prompt; cost of every call logged | ⚪ |
 | M5 | Spaced repetition (FSRS) | the app picks what to review every day | ⚪ |
 | M6 | Notebook OCR (vision) + review screen | photo of a page → checked words in the lesson | ⚪ |
 | M7 | Voice: speech-to-text + pronunciation score | the app scores the pronunciation of a single word | ⚪ |
-| M8 | Embeddings, semantic search, second user | search by meaning; a second user has separate data | ⚪ |
+| M8 | Embeddings, semantic search, second user, PL ⇄ EN interface | search by meaning; a second user has separate data and an English UI | ⚪ |
 
 Details and out-of-scope list: [docs/MILESTONES.md](docs/MILESTONES.md) · what broke and why: [docs/log](docs/log) · changelog: [CHANGELOG.md](CHANGELOG.md).
 
@@ -257,10 +258,10 @@ npm ci
 npm run dev                     # http://localhost:5173, /api is proxied to :8000
 npm test                        # unit tests (Vitest)
 npm run e2e                     # gate M1 (Playwright, vite preview)
-npm run e2e:server              # gate M2, against an EMPTY compose stack
+npm run e2e:server              # gates M2 + M3, against an EMPTY compose stack
 ```
 
-The animated SVGs in this README are generated: `python3 scripts/readme_assets.py`.
+The animated SVGs in this README are generated: `python3 scripts/readme_assets.py`. PWA icons: `cd web && node scripts/pwa-icons.mjs`.
 
 The brand lives in [docs/assets/brand](docs/assets/brand): the app icon, the favicon-sized icon and the wordmark in light and dark. The wordmark is outlined from Archivo ExtraBold (SIL Open Font License), so it renders the same with or without web fonts; regenerate it with `python3 scripts/brand_assets.py <path to Archivo-ExtraBold.ttf>` (needs `fonttools`).
 
