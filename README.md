@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/igorkotlarz1/quaderno/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/igorkotlarz1/quaderno/ci.yml?branch=main&style=for-the-badge&label=CI&logo=githubactions&logoColor=white" alt="CI"></a>
-  <img src="https://img.shields.io/badge/milestone-M2_of_8-c8321b?style=for-the-badge" alt="Milestone">
+  <img src="https://img.shields.io/badge/next-M3_of_8-c8321b?style=for-the-badge" alt="Next milestone">
   <img src="https://img.shields.io/badge/obiettivo-A1_→_B1-009246?style=for-the-badge" alt="Goal">
   <img src="https://img.shields.io/badge/lingua-italiano_🇮🇹-ce2b37?style=for-the-badge" alt="Language">
 </p>
@@ -211,7 +211,7 @@ compose.yaml · Dockerfile · .env.example
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/milestones-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="./docs/assets/milestones-light.svg">
-  <img alt="Milestones M1 to M8 as pebbles on a path: M1 done, M2 in review, M3 to M8 planned." src="./docs/assets/milestones-dark.svg" width="100%">
+  <img alt="Milestones M1 to M8 as pebbles on a path: M1 and M2 done, M3 next, M4 to M8 planned." src="./docs/assets/milestones-dark.svg" width="100%">
 </picture>
 
 Each milestone has a **gate**: one sentence that must be true on a real lesson, checked by an automated test (`test_gate_mN`) and by hand from a Polish runbook.
@@ -219,7 +219,7 @@ Each milestone has a **gate**: one sentence that must be true on a real lesson, 
 | | Milestone | Done when | Status |
 |---|---|---|---|
 | M1 | React + Vite + TS port | importing the old JSON export shows the same view as the original app | ✅ done |
-| M2 | FastAPI + Postgres on the OptiPlex, Tailscale, backups | phone and laptop see the same lesson; a trial restore works | 🔴 in review |
+| M2 | FastAPI + Postgres on the OptiPlex, Tailscale, backups | phone and laptop see the same lesson; a trial restore works | ✅ done |
 | M3 | Offline-first PWA (IndexedDB + service worker) | a lesson typed in airplane mode syncs when the network is back | ⚪ |
 | M4 | "Opracuj lekcję" through the Claude API | one click instead of the manual prompt; cost of every call logged | ⚪ |
 | M5 | Spaced repetition (FSRS) | the app picks what to review every day | ⚪ |
