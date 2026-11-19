@@ -15,6 +15,7 @@ export function LevelBar({ openWeek, forceOpen }: { openWeek: () => void; forceO
   const pr = la ? la.progress : 0;
   const idx = LEVELS.indexOf(lv);
   const due = assessmentDue(state);
+  const total = (idx * 100 + fill) / LEVELS.length; // % of the whole scale
   useEffect(() => { const t = requestAnimationFrame(() => setFill(pr)); return () => cancelAnimationFrame(t); }, [pr, lv]);
 
   const sub = la
@@ -39,11 +40,14 @@ export function LevelBar({ openWeek, forceOpen }: { openWeek: () => void; forceO
       </div>
       <div className="lvl-track" id="lvl-track" role="meter" aria-label="Postęp poziomu" aria-valuemin={0} aria-valuemax={100}
         aria-valuenow={Math.round((idx * 100 + pr) / LEVELS.length)} aria-valuetext={`${lv}, ${pr}% do kolejnego poziomu`}>
-        {LEVELS.map((L, i) => (
-          <div key={L} className={"lvl-seg" + (i < idx ? " done" : "") + (i === idx ? " now" : "")}>
-            <i style={i === idx ? { width: fill + "%" } : undefined} /><span>{L}</span>
-          </div>
-        ))}
+        {/* one "vial": red liquid fills the whole A1 → B1 scale, ticks mark each level */}
+        <div className="vial">
+          <i className="vial-fill" style={{ width: `max(20px, calc(${total}% - 6px))` }} />
+          {[1, 2, 3, 4].map((k) => <span className="vial-tick" key={k} style={{ left: `${k * 20}%` }} />)}
+        </div>
+        <div className="vial-lbl">
+          {LEVELS.map((L, i) => <span key={L} className={i < idx ? "done" : i === idx ? "now" : ""}>{L}</span>)}
+        </div>
       </div>
       <div className="lvl-more" id="lvl-more" hidden={!open}>
         {!la ? (
