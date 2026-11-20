@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/igorkotlarz1/quaderno/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/igorkotlarz1/quaderno/ci.yml?branch=main&style=for-the-badge&label=CI&logo=githubactions&logoColor=white" alt="CI"></a>
-  <img src="https://img.shields.io/badge/next-M4_of_8-c8321b?style=for-the-badge" alt="Next milestone">
+  <img src="https://img.shields.io/badge/next-M5_of_8-c8321b?style=for-the-badge" alt="Next milestone">
   <img src="https://img.shields.io/badge/obiettivo-A1_→_B1-009246?style=for-the-badge" alt="Goal">
   <img src="https://img.shields.io/badge/lingua-italiano_🇮🇹-ce2b37?style=for-the-badge" alt="Language">
 </p>
